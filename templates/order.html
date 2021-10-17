@@ -91,6 +91,11 @@
 
                   <!-- Right Content -->
                   <div class="col-sm-12 col-md-8">
+                    <!-- Button Group -->
+                    <div class="col-md-12 text-right">
+                      <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" disabled><i class="c-icon c-icon-xl cil-arrow-circle-bottom"></i><br>All</button>
+                      <p></p>
+                    </div>
                     <!-- Serial Code List -->
                     <div class="card border-secondary">
                       <div class="card-header">
@@ -126,9 +131,9 @@
                               <td>
                                 <button type="button" class="btn btn-sm btn-pill btn-info small" data-toggle="modal" data-target="#path_{{serial_code.id}}_modal">Path</button>
                                 {% if last_status|index:forloop.counter0 != 'REJECTED' %}
-                                <button type="button" class="btn btn-sm btn-pill btn-primary small" disabled>Receive</button>
+                                <button type="button" class="btn btn-sm btn-pill btn-primary small" data-toggle="modal" data-target="#receive_modal" onclick="prepare_receive('{{serial_code.id}}','{{serial_code.code}}')">Receive</button>
                                 <button type="button" class="btn btn-sm btn-pill btn-danger small" data-toggle="modal" data-target="#reject_modal" onclick="prepare_reject('{{serial_code.id}}','{{serial_code.code}}')">Reject</button>
-                                <button type="button" class="btn btn-sm btn-pill btn-warning small" disabled>Edit</button>
+                                <button type="button" class="btn btn-sm btn-pill btn-warning small" data-toggle="modal" data-target="#edit_modal" onclick="prepare_edit('{{serial_code.id}}','{{serial_code.code}}')">Edit</button>
                                 {% endif %}
                               </td>
                             </tr>
@@ -191,6 +196,39 @@
         </div>
       </div>
       {% endfor %}
+      <!-- Receive Modal -->
+      <div class="modal fade" id="receive_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-primary" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Receive</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <h5>Who are you and where is the current location ?</h5>
+              <h5 id="receive_serial_code"></h5>
+              <input class="form-control" type="text" maxlength="10" id="receive_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="receive_emp_id" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Location</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="receive_location" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="button" onclick="receive()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Reject Modal -->
       <div class="modal fade" id="reject_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-danger" role="document">
@@ -205,20 +243,47 @@
               <input class="form-control" type="text" maxlength="10" id="reject_serial_code_id" hidden>
               <br>
               <div class="form-group row">
-                <label class="col-md-3 col-form-label text-right">Employee ID</label>
-                <div class="col-md-9">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
                   <input class="form-control" type="text" id="reject_emp_id" value="">
                 </div>
               </div>
               <div class="form-group row">
-                <label class="col-md-3 col-form-label text-right">Location</label>
-                <div class="col-md-9">
+                <label class="col-md-4 col-form-label text-right">Location</label>
+                <div class="col-md-8">
                   <input class="form-control" type="text" id="reject_location" value="">
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-danger" type="button" onclick="reject()">I'm sure</button>
+              <button class="btn btn-danger" type="button" onclick="reject()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit Modal -->
+      <div class="modal fade" id="edit_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-warning" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <h5>Are you sure to edit this serial code ?</h5>
+              <h5 id="edit_serial_code"></h5>
+              <input class="form-control" type="text" maxlength="10" id="edit_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">New Serial Code</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="new_serial_code" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-warning" type="button" onclick="edit()">Confirm</button>
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -248,7 +313,44 @@
       //-- INITAILIZE
       $(document).ready(function() {
         showTime();
+        $('#new_serial_code').mask('9999999-99-99-9999');
       });
+
+      //-- MAIN FUNCTION
+      function prepare_receive(id, code){
+        $('#receive_serial_code').text(code);
+        $('#receive_serial_code_id').val(id);
+      }
+
+      function receive(){
+        var order_no = $('#order_no').val();
+        var serial_code_id = $('#receive_serial_code_id').val();
+        var emp_id = $('#receive_emp_id').val();
+        var location = $('#receive_location').val();
+        if(emp_id == ""){
+          invalid('receive_emp_id');
+          return;
+        } else if (location == ""){
+          valid('receive_emp_id');
+          invalid('receive_location');
+          return;
+        } else {
+          valid('receive_emp_id');
+          valid('receive_location');
+          $.ajax({
+            url: '/serial_receive/',
+            data: {
+              'serial_code_id' : serial_code_id,
+              'emp_id' : emp_id,
+              'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
+      }
 
       function prepare_reject(id, code){
         $('#reject_serial_code').text(code);
@@ -276,6 +378,34 @@
               'serial_code_id' : serial_code_id,
               'emp_id' : emp_id,
               'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
+      }
+
+      function prepare_edit(id, code){
+        $('#edit_serial_code').text(code);
+        $('#edit_serial_code_id').val(id);
+      }
+
+      function edit(){
+        var order_no = $('#order_no').val();
+        var serial_code_id = $('#edit_serial_code_id').val();
+        var new_serial_code = $('#new_serial_code').val();
+        if(new_serial_code == ""){
+          invalid('new_serial_code');
+          return;
+        } else {
+          valid('new_serial_code');
+          $.ajax({
+            url: '/serial_edit/',
+            data: {
+              'serial_code_id' : serial_code_id,
+              'new_serial_code' : new_serial_code,
             },
             dataType: 'json',
             success: function (data) {

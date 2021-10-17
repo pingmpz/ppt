@@ -103,6 +103,21 @@ def order(request, order_no):
     }
     return render(request, 'order.html', context)
 
+def serial_receive(request):
+    # COLLECT DATA
+    serial_code_id = request.GET.get('serial_code_id')
+    emp_id = request.GET.get('emp_id')
+    location = request.GET.get('location')
+    # PREPARE DATA
+    serial = Serial.objects.get(id=serial_code_id)
+    status = 'RECEIVED'
+    # SAVE DATA
+    path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
+    path_new.save()
+    data = {
+    }
+    return JsonResponse(data)
+
 def serial_reject(request):
     # COLLECT DATA
     serial_code_id = request.GET.get('serial_code_id')
@@ -114,6 +129,19 @@ def serial_reject(request):
     # SAVE DATA
     path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
     path_new.save()
+    data = {
+    }
+    return JsonResponse(data)
+
+def serial_edit(request):
+    # COLLECT DATA
+    serial_code_id = request.GET.get('serial_code_id')
+    new_serial_code = request.GET.get('new_serial_code')
+    # PREPARE DATA
+    serial = Serial.objects.get(id=serial_code_id)
+    # SAVE DATA
+    serial.code = new_serial_code
+    serial.save()
     data = {
     }
     return JsonResponse(data)

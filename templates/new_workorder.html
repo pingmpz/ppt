@@ -280,7 +280,6 @@
       }
 
       //-- VALIDATE
-      //-- NEED MORE CODING
       function validate_order_no(_callback){
         var order_no = $('#order_no').val();
         if(order_no.length != 10){
@@ -377,35 +376,6 @@
         $('#invalid-icon').prop('hidden', false);
         $('#invalid-text').text(text);
       }
-
-      //-- KEY RESTRICT
-      $("#customer_no").on("keypress keyup blur",function (event) {
-          $(this).val($(this).val().replace(/[^\d].+/, ""));
-           if ((event.which < 48 || event.which > 57)) {
-               event.preventDefault();
-           }
-      });
-
-      $("#year").on("keypress keyup blur",function (event) {
-          $(this).val($(this).val().replace(/[^\d].+/, ""));
-           if ((event.which < 48 || event.which > 57)) {
-               event.preventDefault();
-           }
-      });
-
-      $("#week").on("keypress keyup blur",function (event) {
-          $(this).val($(this).val().replace(/[^\d].+/, ""));
-           if ((event.which < 48 || event.which > 57)) {
-               event.preventDefault();
-           }
-      });
-
-      $("#running_no").on("keypress keyup blur",function (event) {
-          $(this).val($(this).val().replace(/[^\d].+/, ""));
-           if ((event.which < 48 || event.which > 57)) {
-               event.preventDefault();
-           }
-      });
     </script>
   </body>
 </html>
