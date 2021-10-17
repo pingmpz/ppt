@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+{% load static %}
+<!--
+* CoreUI Pro based Bootstrap Admin Template
+* @version v3.2.0
+* @link https://coreui.io/pro/
+* Copyright (c) 2020 creativeLabs Łukasz Holeczek
+* License (https://coreui.io/pro/license)
+-->
+<html lang="en">
+  <head>
+    <base href="./">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+    <meta name="author" content="Łukasz Holeczek">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <title>New Work Order | Production Part Traker</title>
+    <!-- Main styles for this application-->
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <!-- Icon CCS -->
+    <link href="{% static "vendors/@coreui/icons/css/free.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendors/@coreui/icons/css/brand.min.css" %}" rel="stylesheet">
+    <!-- Select CCS -->
+    <link href="{% static "vendors/select2/css/select2.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendors/select2/css/select2-coreui.min.css" %}" rel="stylesheet">
+  </head>
+  <body class="c-app c-no-layout-transition">
+    <!-- *** LEFT SIDE BAR *** -->
+    {% include 'sidebar.html' %}
+    <!-- *** RIGHT SIDE BAR *** -->
+
+    <div class="c-wrapper">
+      <!-- *** HEADER *** -->
+      <header class="c-header c-header-light c-header-fixed">
+        {% include 'header.html' %}
+        <div class="c-subheader justify-content-between px-3">
+          <!-- Breadcrumb-->
+          <ol class="breadcrumb border-0 m-0 px-0 px-md-3">
+            New Work Order
+          </ol>
+          <div class="c-subheader-nav d-md-down-none mfe-2">
+            <i class="c-icon cil-warning text-danger" id="invalid-icon" hidden></i>&nbsp;<span class="text-danger" id="invalid-text"></span>
+          </div>
+        </div>
+      </header>
+      <!-- *** BODY *** -->
+      <div class="c-body">
+        <main class="c-main">
+          <div class="container-fluid">
+            <div class="fade-in">
+              <!-- Main Body -->
+              <div class="row">
+                  <!-- Left Content -->
+                  <div class="col-sm-12 col-md-4">
+                    <!-- Work Order Information -->
+                    <div class="card border-secondary">
+                      <div class="card-header">
+                        <strong>Work Order Information</strong>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Work Order No</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" maxlength="10" id="order_no">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Drawing No</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="drawing_no">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">FG Code</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="fg_code">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Employee ID</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="emp_id">
+                          </div>
+                        </div>
+                        <!-- <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">FG Code</label>
+                          <div class="col-md-9">
+                            <select class="form-control select2-single" id="fg_code">
+                              <option value="-1">-</option>
+                              <option value="1">#1</option>
+                              <option value="2">#2</option>
+                              <option value="3">#3</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Create By</label>
+                          <div class="col-md-9">
+                            <select class="form-control select2-single" id="emp_id">
+                              <option value="-1">-</option>
+                              <option value="1">5731 | Yashawantatul Mangalmurti (MIS - IT Programmer)</option>
+                              <option value="2">5731 | Yashawantatul Mangalmurti (MIS - IT Programmer)</option>
+                              <option value="3">5731 | Yashawantatul Mangalmurti (MIS - IT Programmer)</option>
+                            </select>
+                          </div>
+                        </div> -->
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Location</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="location">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Add Serial Code-->
+                    <div class="card border-secondary">
+                      <div class="card-header">
+                        <strong>Add Serial Code</strong>
+                        <div class="card-header-actions">
+                          <button type="button" class="btn btn-sm btn-pill btn-info small" onclick="add_serial_code()">Add</button>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Serial Code</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" maxlength="18" id="serial_code">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right"></label>
+                          <div class="col-md-1">
+                            <label class="col-form-label c-switch c-switch-sm c-switch-3d c-switch-primary">
+                              <input class="c-switch-input" type="checkbox" id="auto_inc" checked><span class="c-switch-slider"></span>
+                            </label>
+                          </div>
+                          <label class="col-md-3 col-form-label text-left" for="auto_inc">Auto Increment</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Content -->
+                  <div class="col-sm-12 col-md-8">
+                    <!-- Button Group -->
+                    <div class="col-md-12 text-right">
+                      <button type="button" class="btn btn-lg btn-success small" style="width: 80px" id="save_button" onclick="save()"><i class="c-icon c-icon-xl cil-save"></i><br>Save</button>
+                      <p></p>
+                    </div>
+                    <!-- Serial Code List -->
+                    <div class="card border-secondary">
+                      <div class="card-header">
+                        <strong>Serial Code List</strong>
+                      </div>
+                      <div class="card-body">
+                        <table class="table table-sm text-center" id="serial_code_table">
+                          <thead>
+                            <tr class="bg-dark">
+                              <th>Item</th>
+                              <th>Serial Code</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody id="serial_code_table_body">
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <!-- *** FOOTER *** -->
+      {% include 'footer.html' %}
+      <!-- *** MODAL *** -->
+    </div>
+    <!-- CoreUI and necessary plugins-->
+    <script src="{% static "vendors/@coreui/coreui-pro/js/coreui.bundle.min.js" %}"></script>
+    <!--[if IE]><!-->
+    <script src="{% static "vendors/@coreui/icons/js/svgxuse.min.js" %}"></script>
+    <!--<![endif]-->
+    <!-- Jqeury JS -->
+    <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+    <!-- Select JS -->
+    <script src="{% static "vendors/select2/js/select2.min.js" %}"></script>
+    <!-- Datamask JS -->
+    <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
+    <!-- Custom JS -->
+    <script src="{% static "customize/js/clock.js" %}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        setTimeout(function() {
+          document.body.classList.remove('c-no-layout-transition')
+        }, 2000);
+      });
+
+      var item_count = 0;
+
+      //-- INITAILIZE
+      $(document).ready(function() {
+        // $('#fg_code').select2({theme: 'coreui'});
+        // $('#emp_id').select2({theme: 'coreui'});
+        $('#order_no').mask('9999999999');
+        $('#serial_code').mask('9999999-99-99-9999');
+        showTime();
+      });
+
+      //-- MAIN SCRIPT
+      function add_serial_code(){
+        var serial_code = $("#serial_code").val();
+        if(serial_code.length != 18) return;
+        buildRow(serial_code);
+        //-- Auto Increment Logic
+        if ($('#auto_inc').is(':checked')) {
+          var serial_code_list = serial_code.split('-');
+          var running_no = parseInt(serial_code_list[3]);
+          if(running_no != 9999){
+            running_no += 1;
+            for(var i = running_no.toString().length;i < 4;i++){
+              running_no = "0" + running_no;
+            }
+            var new_serial_code = serial_code_list[0] + "-" + serial_code_list[1] + "-" + serial_code_list[2] + "-" + running_no;
+            $("#serial_code").val(new_serial_code);
+          }
+        }
+      }
+
+      function buildRow(serial_code){
+        row = "";
+        row += "<tr id='serial_code_row_" + item_count + "'>";
+        row += "<td id='serial_code_item_" + item_count + "'>";
+        row += (item_count + 1);
+        row += "</td>";
+        row += "<td id='serial_code_" + item_count + "'>";
+        row += serial_code;
+        row += "</td>";
+        row += "<td>";
+        row += "<button type='button' class='btn btn-sm btn-pill btn-danger small' onclick='removeRow("+ item_count +")'>Delete</button>";
+        row += "</td>";
+        row += "</tr>";
+        $("#serial_code_table_body").append(row);
+        item_count++;
+      }
+
+      function removeRow(row_no){
+        for(var i = row_no;i < item_count;i++){
+          $('#serial_code_' + i).text($('#serial_code_' + (i+1)).html());
+        }
+        item_count--;
+        $("table#serial_code_table tr#serial_code_row_" + item_count).remove();
+      }
+
+      function save(){
+        $('#invalid-icon').prop('hidden', true);
+        $('#invalid-text').text('');
+        if(validate_order_no() && validate_drawing_no() && validate_fg() && validate_emp() && validate_location() && validate_serial_code_list()){
+          // SAVE !
+        }
+      }
+
+      //-- VALIDATE
+      //-- NEED MORE CODING
+      function validate_order_no(){
+        var order_no = $('#order_no').val();
+        if(order_no.length != 10){
+          invalid('order_no');
+          invalid_text('Work Order No must have 10 digits.');
+          return false;
+        } else {
+          valid('order_no');
+          return true;
+        }
+        return false;
+      }
+
+      function validate_drawing_no(){
+        var drawing_no = $('#drawing_no').val();
+        if(drawing_no.length == ""){
+          invalid('drawing_no');
+          invalid_text('Please insert Drawing No.');
+          return false;
+        }
+        valid('drawing_no');
+        return true;
+      }
+
+      function validate_fg(){
+        var fg_code = $('#fg_code').val();
+        if(fg_code == ""){
+          invalid('fg_code');
+          invalid_text('Please add FG Code.');
+          return false;
+        }
+        valid('fg_code');
+        return true;
+      }
+
+      function validate_emp(){
+        var emp_id = $('#emp_id').val();
+        if(emp_id == ""){
+          invalid('emp_id');
+          invalid_text('Please add your employee ID.');
+          return false;
+        }
+        valid('emp_id');
+        return true;
+      }
+
+      function validate_location(){
+        var location = $('#location').val();
+        if(location.length == ""){
+          invalid('location');
+          invalid_text('Please insert Location.');
+          return false;
+        }
+        valid('location');
+        return true;
+      }
+
+      function validate_serial_code_list(){
+        if(item_count == 0){
+          invalid_text('Please add serial code at least 1 item.');
+          return false;
+        }
+        return true;
+      }
+
+      //-- VALIDATE CONTROL
+      function valid(box_id){
+        $("#" + box_id).addClass("is-valid");
+        $("#" + box_id).removeClass("is-invalid");
+      }
+
+      function invalid(box_id){
+        $("#" + box_id).addClass("is-invalid");
+        $("#" + box_id).removeClass("is-valid");
+      }
+
+      function invalid_text(text){
+        $('#invalid-icon').prop('hidden', false);
+        $('#invalid-text').text(text);
+      }
+
+      //-- KEY RESTRICT
+      $("#customer_no").on("keypress keyup blur",function (event) {
+          $(this).val($(this).val().replace(/[^\d].+/, ""));
+           if ((event.which < 48 || event.which > 57)) {
+               event.preventDefault();
+           }
+      });
+
+      $("#year").on("keypress keyup blur",function (event) {
+          $(this).val($(this).val().replace(/[^\d].+/, ""));
+           if ((event.which < 48 || event.which > 57)) {
+               event.preventDefault();
+           }
+      });
+
+      $("#week").on("keypress keyup blur",function (event) {
+          $(this).val($(this).val().replace(/[^\d].+/, ""));
+           if ((event.which < 48 || event.which > 57)) {
+               event.preventDefault();
+           }
+      });
+
+      $("#running_no").on("keypress keyup blur",function (event) {
+          $(this).val($(this).val().replace(/[^\d].+/, ""));
+           if ((event.which < 48 || event.which > 57)) {
+               event.preventDefault();
+           }
+      });
+    </script>
+  </body>
+</html>
