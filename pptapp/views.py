@@ -103,6 +103,22 @@ def order(request, order_no):
     }
     return render(request, 'order.html', context)
 
+def multiple_receive(request):
+    # COLLECT DATA
+    serial_code_list = request.GET.getlist('serial_code_list[]')
+    emp_id = request.GET.get('emp_id')
+    location = request.GET.get('location')
+    # PREPARE DATA
+    status = 'RECEIVED'
+    # SAVE DATA
+    for i in range(len(serial_code_list)):
+        serial = Serial.objects.get(id=serial_code_list[i])
+        path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
+        path_new.save()
+    data = {
+    }
+    return JsonResponse(data)
+
 def serial_receive(request):
     # COLLECT DATA
     serial_code_id = request.GET.get('serial_code_id')

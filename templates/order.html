@@ -93,7 +93,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
-                      <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" disabled><i class="c-icon c-icon-xl cil-arrow-circle-bottom"></i><br>All</button>
+                      <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-arrow-circle-bottom"></i><br>Multiple</button>
                       <p></p>
                     </div>
                     <!-- Serial Code List -->
@@ -196,17 +196,56 @@
         </div>
       </div>
       {% endfor %}
+      <!-- Multiple Receive Modal -->
+      <div class="modal fade" id="multiple_receive_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-primary" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Multiple Receive</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Serial Code(s)</label>
+                <div class="col-md-8">
+                  <select class="c-multi-select text-left" id="multiple_receive_serial_code_list" multiple>
+                    {% for serial_code in serial_codes %}
+                    {% if last_status|index:forloop.counter0 != 'REJECTED' %}
+                    <option value="{{serial_code.id}}">{{serial_code.code}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="multiple_receive_emp_id" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Location</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="multiple_receive_location" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="button" onclick="multiple_receive()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Receive Modal -->
       <div class="modal fade" id="receive_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-primary" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Receive</h4>
+              <h4 class="modal-title">Receive : <span id="receive_serial_code"></span></h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body text-center">
-              <h5>Who are you and where is the current location ?</h5>
-              <h5 id="receive_serial_code"></h5>
               <input class="form-control" type="text" maxlength="10" id="receive_serial_code_id" hidden>
               <br>
               <div class="form-group row">
@@ -234,12 +273,10 @@
         <div class="modal-dialog modal-danger" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Reject</h4>
+              <h4 class="modal-title">Reject : <span id="reject_serial_code"></span></h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body text-center">
-              <h5>Are you sure to reject this serial code ?</h5>
-              <h5 id="reject_serial_code"></h5>
               <input class="form-control" type="text" maxlength="10" id="reject_serial_code_id" hidden>
               <br>
               <div class="form-group row">
@@ -267,12 +304,10 @@
         <div class="modal-dialog modal-warning" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Edit</h4>
+              <h4 class="modal-title">Edit : <span id="edit_serial_code"></span></h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body text-center">
-              <h5>Are you sure to edit this serial code ?</h5>
-              <h5 id="edit_serial_code"></h5>
               <input class="form-control" type="text" maxlength="10" id="edit_serial_code_id" hidden>
               <br>
               <div class="form-group row">
@@ -309,6 +344,12 @@
           document.body.classList.remove('c-no-layout-transition')
         }, 2000);
       });
+      var multiple_receive_serial_code_list = document.getElementById('multiple_receive_serial_code_list');
+      var multiple_receive_serial_code_select = new coreui.MultiSelect(multiple_receive_serial_code_list, {
+        multiple: true,
+        selectionType: 'tags',
+        search: true,
+      });
 
       //-- INITAILIZE
       $(document).ready(function() {
@@ -317,6 +358,38 @@
       });
 
       //-- MAIN FUNCTION
+      function multiple_receive(){
+        var order_no = $('#order_no').val();
+        var serial_code_list = $('#multiple_receive_serial_code_list').val();
+        var emp_id = $('#multiple_receive_emp_id').val();
+        var location = $('#multiple_receive_location').val();
+        if(serial_code_list.length == 0){
+          return;
+        } else if(emp_id == ""){
+          invalid('multiple_receive_emp_id');
+          return;
+        } else if (location == ""){
+          valid('multiple_receive_emp_id');
+          invalid('multiple_receive_location');
+          return;
+        } else {
+          valid('multiple_receive_emp_id');
+          valid('multiple_receive_location');
+          $.ajax({
+            url: '/multiple_receive/',
+            data: {
+              'serial_code_list' : serial_code_list,
+              'emp_id' : emp_id,
+              'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
+      }
+
       function prepare_receive(id, code){
         $('#receive_serial_code').text(code);
         $('#receive_serial_code_id').val(id);
