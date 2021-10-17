@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+{% load static %}
+{% load extra %}
+<!--
+* CoreUI Pro based Bootstrap Admin Template
+* @version v3.2.0
+* @link https://coreui.io/pro/
+* Copyright (c) 2020 creativeLabs Łukasz Holeczek
+* License (https://coreui.io/pro/license)
+-->
+<html lang="en">
+  <head>
+    <base href="./">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+    <meta name="author" content="Łukasz Holeczek">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <title>Work Order : {{order.no}} | Production Part Traker</title>
+    <!-- Main styles for this application-->
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <!-- Icon CCS -->
+    <link href="{% static "vendors/@coreui/icons/css/free.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendors/@coreui/icons/css/brand.min.css" %}" rel="stylesheet">
+    <!-- Select CCS -->
+    <link href="{% static "vendors/select2/css/select2.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendors/select2/css/select2-coreui.min.css" %}" rel="stylesheet">
+  </head>
+  <body class="c-app c-no-layout-transition">
+    <!-- *** LEFT SIDE BAR *** -->
+    {% include 'sidebar.html' %}
+    <!-- *** RIGHT SIDE BAR *** -->
+
+    <div class="c-wrapper">
+      <!-- *** HEADER *** -->
+      <header class="c-header c-header-light c-header-fixed">
+        {% include 'header.html' %}
+        <div class="c-subheader justify-content-between px-3">
+          <!-- Breadcrumb-->
+          <ol class="breadcrumb border-0 m-0 px-0 px-md-3">
+            Work Order : {{order.no}}
+          </ol>
+          <div class="c-subheader-nav d-md-down-none mfe-2">
+
+          </div>
+        </div>
+      </header>
+      <!-- *** BODY *** -->
+      <div class="c-body">
+        <main class="c-main">
+          <div class="container-fluid">
+            <div class="fade-in">
+              <!-- Main Body -->
+              <div class="row">
+                  <!-- Left Content -->
+                  <div class="col-sm-12 col-md-4">
+                    <!-- Work Order Information -->
+                    <div class="card border-secondary">
+                      <div class="card-header">
+                        <strong>Work Order Information</strong>
+                      </div>
+                      <div class="card-body">
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Work Order No</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" maxlength="10" id="order_no" value="{{order.no}}" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Drawing No</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="drawing_no" value="{{order.drawing_no}}" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">FG Code</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="fg_code" value="{{order.fg_code}}" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">Creator</label>
+                          <div class="col-md-9">
+                            <input class="form-control" type="text" id="emp_id" value="{{order.emp_id}}" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Content -->
+                  <div class="col-sm-12 col-md-8">
+                    <!-- Serial Code List -->
+                    <div class="card border-secondary">
+                      <div class="card-header">
+                        <strong>Serial Code List ({{serial_codes|length}})</strong>
+                      </div>
+                      <div class="card-body">
+                        <table class="table table-sm text-center" id="serial_code_table">
+                          <thead>
+                            <tr class="bg-dark">
+                              <th>Item</th>
+                              <th>Serial Code</th>
+                              <th>Status</th>
+                              <th>Employee</th>
+                              <th>Location</th>
+                              <th>Timestamp</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for serial_code in serial_codes %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{serial_code.code}}</td>
+                              <td>
+                                {% if last_status|index:forloop.counter0 == 'CREATED' %}<span class="text-success">Created</span>
+                                {% elif last_status|index:forloop.counter0 == 'RECEIVED' %}<span class="text-info">Received</span>
+                                {% elif last_status|index:forloop.counter0 == 'REJECTED' %}<span class="text-danger">Rejected</span>
+                                {% else %}{{last_status|index:forloop.counter0}}{% endif %}
+                              </td>
+                              <td>{{last_receivers|index:forloop.counter0}}</td>
+                              <td>{{last_locations|index:forloop.counter0}}</td>
+                              <td>{{last_timestamps|index:forloop.counter0}}</td>
+                              <td>
+                                <button type="button" class="btn btn-sm btn-pill btn-info small" data-toggle="modal" data-target="#path_{{serial_code.id}}_modal">Path</button>
+                                {% if last_status|index:forloop.counter0 != 'REJECTED' %}
+                                <button type="button" class="btn btn-sm btn-pill btn-primary small" disabled>Receive</button>
+                                <button type="button" class="btn btn-sm btn-pill btn-danger small" data-toggle="modal" data-target="#reject_modal" onclick="prepare_reject('{{serial_code.id}}','{{serial_code.code}}')">Reject</button>
+                                <button type="button" class="btn btn-sm btn-pill btn-warning small" disabled>Edit</button>
+                                {% endif %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <!-- *** FOOTER *** -->
+      {% include 'footer.html' %}
+      <!-- *** MODAL *** -->
+      <!-- Path Modal -->
+      {% for serial_code in serial_codes %}
+      <div class="modal fade" id="path_{{serial_code.id}}_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-info" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Path : {{serial_code.code}}</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table table-sm text-center" id="path_{{serial_code.id}}_table">
+                <thead>
+                  <tr class="bg-dark">
+                    <th>No</th>
+                    <th>Status</th>
+                    <th>Employee</th>
+                    <th>Location</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for path in path_list|index:forloop.counter0 %}
+                  <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>
+                      {% if path.status == 'CREATED' %}<span class="text-success">Created</span>
+                      {% elif path.status == 'RECEIVED' %}<span class="text-info">Received</span>
+                      {% elif path.status == 'REJECTED' %}<span class="text-danger">Rejected</span>
+                      {% else %}ERROR{% endif %}
+                    </td>
+                    <td>{{path.emp_id}}</td>
+                    <td>{{path.location}}</td>
+                    <td>{{path.date_published}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      <!-- Reject Modal -->
+      <div class="modal fade" id="reject_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-danger" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Reject</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <h5>Are you sure to reject this serial code ?</h5>
+              <h5 id="reject_serial_code"></h5>
+              <input class="form-control" type="text" maxlength="10" id="reject_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label text-right">Employee ID</label>
+                <div class="col-md-9">
+                  <input class="form-control" type="text" id="reject_emp_id" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label text-right">Location</label>
+                <div class="col-md-9">
+                  <input class="form-control" type="text" id="reject_location" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-danger" type="button" onclick="reject()">I'm sure</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CoreUI and necessary plugins-->
+    <script src="{% static "vendors/@coreui/coreui-pro/js/coreui.bundle.min.js" %}"></script>
+    <!--[if IE]><!-->
+    <script src="{% static "vendors/@coreui/icons/js/svgxuse.min.js" %}"></script>
+    <!--<![endif]-->
+    <!-- Jqeury JS -->
+    <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+    <!-- Select JS -->
+    <script src="{% static "vendors/select2/js/select2.min.js" %}"></script>
+    <!-- Datamask JS -->
+    <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
+    <!-- Custom JS -->
+    <script src="{% static "customize/js/clock.js" %}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        setTimeout(function() {
+          document.body.classList.remove('c-no-layout-transition')
+        }, 2000);
+      });
+
+      //-- INITAILIZE
+      $(document).ready(function() {
+        showTime();
+      });
+
+      function prepare_reject(id, code){
+        $('#reject_serial_code').text(code);
+        $('#reject_serial_code_id').val(id);
+      }
+
+      function reject(){
+        var order_no = $('#order_no').val();
+        var serial_code_id = $('#reject_serial_code_id').val();
+        var emp_id = $('#reject_emp_id').val();
+        var location = $('#reject_location').val();
+        if(emp_id == ""){
+          invalid('reject_emp_id');
+          return;
+        } else if (location == ""){
+          valid('reject_emp_id');
+          invalid('reject_location');
+          return;
+        } else {
+          valid('reject_emp_id');
+          valid('reject_location');
+          $.ajax({
+            url: '/serial_reject/',
+            data: {
+              'serial_code_id' : serial_code_id,
+              'emp_id' : emp_id,
+              'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
+      }
+
+      //-- VALIDATE CONTROL
+      function valid(box_id){
+        $("#" + box_id).addClass("is-valid");
+        $("#" + box_id).removeClass("is-invalid");
+      }
+
+      function invalid(box_id){
+        $("#" + box_id).addClass("is-invalid");
+        $("#" + box_id).removeClass("is-valid");
+      }
+
+      function invalid_text(text){
+        $('#invalid-icon').prop('hidden', false);
+        $('#invalid-text').text(text);
+      }
+    </script>
+  </body>
+</html>

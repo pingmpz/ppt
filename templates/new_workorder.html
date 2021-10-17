@@ -48,6 +48,8 @@
       <!-- *** BODY *** -->
       <div class="c-body">
         <main class="c-main">
+        <form class="form-horizontal" action="/new_workorder_save/" method="POST" enctype="multipart/form-data" id="MyForm">
+          {% csrf_token %}
           <div class="container-fluid">
             <div class="fade-in">
               <!-- Main Body -->
@@ -63,25 +65,25 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Work Order No</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" maxlength="10" id="order_no">
+                            <input class="form-control" type="text" maxlength="10" id="order_no" name="order_no">
                           </div>
                         </div>
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Drawing No</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" id="drawing_no">
+                            <input class="form-control" type="text" id="drawing_no" name="drawing_no">
                           </div>
                         </div>
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">FG Code</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" id="fg_code">
+                            <input class="form-control" type="text" id="fg_code" name="fg_code">
                           </div>
                         </div>
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Employee ID</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" id="emp_id">
+                            <input class="form-control" type="text" id="emp_id" name="emp_id">
                           </div>
                         </div>
                         <!-- <div class="form-group row">
@@ -109,7 +111,7 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Location</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" id="location">
+                            <input class="form-control" type="text" id="location" name="location">
                           </div>
                         </div>
                       </div>
@@ -126,7 +128,7 @@
                         <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Serial Code</label>
                           <div class="col-md-9">
-                            <input class="form-control" type="text" maxlength="18" id="serial_code">
+                            <input class="form-control" type="text" maxlength="18" id="serial_code_add">
                           </div>
                         </div>
                         <div class="form-group row">
@@ -152,9 +154,10 @@
                     <!-- Serial Code List -->
                     <div class="card border-secondary">
                       <div class="card-header">
-                        <strong>Serial Code List</strong>
+                        <strong>Serial Code List (<span id="serial_code_count_text">0</span>)</strong>
                       </div>
                       <div class="card-body">
+                        <input type="text" id="serial_code_count" name="serial_code_count" value="0" hidden>
                         <table class="table table-sm text-center" id="serial_code_table">
                           <thead>
                             <tr class="bg-dark">
@@ -172,6 +175,7 @@
                 </div>
             </div>
           </div>
+        </form>
         </main>
       </div>
       <!-- *** FOOTER *** -->
@@ -205,18 +209,24 @@
         // $('#fg_code').select2({theme: 'coreui'});
         // $('#emp_id').select2({theme: 'coreui'});
         $('#order_no').mask('9999999999');
-        $('#serial_code').mask('9999999-99-99-9999');
+        $('#serial_code_add').mask('9999999-99-99-9999');
         showTime();
       });
 
       //-- MAIN SCRIPT
+      function item_count_add(value){
+        item_count += value;
+        $('#serial_code_count_text').text(item_count);
+        $('#serial_code_count').val(item_count);
+      }
+
       function add_serial_code(){
-        var serial_code = $("#serial_code").val();
-        if(serial_code.length != 18) return;
-        buildRow(serial_code);
+        var serial_code_add = $("#serial_code_add").val();
+        if(serial_code_add.length != 18) return;
+        buildRow(serial_code_add);
         //-- Auto Increment Logic
         if ($('#auto_inc').is(':checked')) {
-          var serial_code_list = serial_code.split('-');
+          var serial_code_list = serial_code_add.split('-');
           var running_no = parseInt(serial_code_list[3]);
           if(running_no != 9999){
             running_no += 1;
@@ -224,7 +234,7 @@
               running_no = "0" + running_no;
             }
             var new_serial_code = serial_code_list[0] + "-" + serial_code_list[1] + "-" + serial_code_list[2] + "-" + running_no;
-            $("#serial_code").val(new_serial_code);
+            $("#serial_code_add").val(new_serial_code);
           }
         }
       }
@@ -232,49 +242,72 @@
       function buildRow(serial_code){
         row = "";
         row += "<tr id='serial_code_row_" + item_count + "'>";
-        row += "<td id='serial_code_item_" + item_count + "'>";
+        row += "<td>";
         row += (item_count + 1);
         row += "</td>";
-        row += "<td id='serial_code_" + item_count + "'>";
+        row += "<td id='serial_code_text_" + item_count + "'>";
         row += serial_code;
+        row += "</td>";
+        row += "<td hidden>";
+        row += "<input type='text' id='serial_code_" + item_count + "' name='serial_code_" + item_count + "' value='" + serial_code + "'>";
         row += "</td>";
         row += "<td>";
         row += "<button type='button' class='btn btn-sm btn-pill btn-danger small' onclick='removeRow("+ item_count +")'>Delete</button>";
         row += "</td>";
         row += "</tr>";
         $("#serial_code_table_body").append(row);
-        item_count++;
+        item_count_add(1);
       }
 
       function removeRow(row_no){
         for(var i = row_no;i < item_count;i++){
-          $('#serial_code_' + i).text($('#serial_code_' + (i+1)).html());
+          $('#serial_code_text_' + i).text($('#serial_code_text_' + (i+1)).html());
+          $('#serial_code_' + i).val($('#serial_code_' + (i+1)).val());
         }
-        item_count--;
+        item_count_add(-1);
         $("table#serial_code_table tr#serial_code_row_" + item_count).remove();
       }
 
       function save(){
         $('#invalid-icon').prop('hidden', true);
         $('#invalid-text').text('');
-        if(validate_order_no() && validate_drawing_no() && validate_fg() && validate_emp() && validate_location() && validate_serial_code_list()){
-          // SAVE !
-        }
+        validate_order_no(function(result) {
+          if(result && validate_drawing_no() && validate_fg() && validate_emp() && validate_location() && validate_serial_code_list()){
+            document.getElementById('MyForm').submit();
+            $('#save_button').prop('disabled', true);
+          }
+        });
       }
 
       //-- VALIDATE
       //-- NEED MORE CODING
-      function validate_order_no(){
+      function validate_order_no(_callback){
         var order_no = $('#order_no').val();
         if(order_no.length != 10){
           invalid('order_no');
           invalid_text('Work Order No must have 10 digits.');
-          return false;
-        } else {
-          valid('order_no');
-          return true;
+          _callback(false);
+          return;
         }
-        return false;
+        $.ajax({
+          url: '/validate_order_no/',
+          data: {
+            'order_no': order_no
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.is_exist) {
+              invalid('order_no');
+              invalid_text('Work Order No is already exist.');
+              _callback(false);
+              return;
+            } else {
+              valid('order_no');
+              _callback(true);
+              return;
+            }
+          }
+        });
       }
 
       function validate_drawing_no(){
