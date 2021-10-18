@@ -7,6 +7,11 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
+def change_location(request):
+    context = {
+    }
+    return render(request, 'change_location.html', context)
+
 def new_workorder(request):
     context = {
     }

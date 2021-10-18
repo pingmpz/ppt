@@ -93,7 +93,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
-                      <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-arrow-circle-bottom"></i><br>Multiple</button>
+                      <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-chevron-double-right"></i><br>Multiple</button>
                       <p></p>
                     </div>
                     <!-- Serial Code List -->
@@ -330,7 +330,7 @@
       </div>
       <!-- Barcode Modal -->
       <div class="modal fade" id="barcode_modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dark" role="document">
+        <div class="modal-dialog modal-lg modal-dark" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Barcode : <span id="barcode_serial_code"></span></h4>
@@ -385,17 +385,18 @@
 
       //-- MAIN FUNCTION
       function prepare_barcode(code){
+        var order_no = $('#order_no').val();
         $('#barcode_serial_code').text(code);
-        JsBarcode("#barcode", code, {
+        JsBarcode("#barcode", order_no + "-" + code, {
           displayValue: true
         });
       }
 
       function print_barcode(){
         var divContents = document.getElementById("barcode_section").innerHTML;
-       var printWindow = window.open('', '', 'height=200,width=400');
-       printWindow.document.write('<html><head><title>Print DIV Content</title>');
-       printWindow.document.write('</head><body >');
+       var printWindow = window.open('', '', 'height=160,width=440');
+       printWindow.document.write('<html><head><title>Print Barcode</title>');
+       printWindow.document.write('</head><body>');
        printWindow.document.write(divContents);
        printWindow.document.write('</body></html>');
        printWindow.document.close();
