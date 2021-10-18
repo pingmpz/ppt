@@ -15,6 +15,7 @@ urlpatterns = [
     path('fg_master/', views.fg_master, name='fg_master'),
 
     path('order/<str:order_no>', views.order, name='order'),
+    path('create_serial/', views.create_serial, name='create_serial'),
     path('multiple_receive/', views.multiple_receive, name='multiple_receive'),
     path('serial_receive/', views.serial_receive, name='serial_receive'),
     path('serial_reject/', views.serial_reject, name='serial_reject'),

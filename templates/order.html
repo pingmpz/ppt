@@ -93,6 +93,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
+                      <button type="button" class="btn btn-lg btn-success small" style="width: 80px" data-toggle="modal" data-target="#create_serial_code_modal"><i class="c-icon c-icon-xl cil-plus"></i><br>Create</button>
                       <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-chevron-double-right"></i><br>Multiple</button>
                       <p></p>
                     </div>
@@ -200,6 +201,43 @@
         </div>
       </div>
       {% endfor %}
+      <!-- Create Serial Code Modal -->
+      <div class="modal fade" id="create_serial_code_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-success" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Create</span></h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <input class="form-control" type="text" maxlength="10" id="create_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Serial Code</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="create_serial_code" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="create_emp_id" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Location</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="create_location" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success" type="button" onclick="create()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Multiple Receive Modal -->
       <div class="modal fade" id="multiple_receive_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-primary" role="document">
@@ -381,6 +419,7 @@
       $(document).ready(function() {
         showTime();
         $('#new_serial_code').mask('9999999-99-99-9999');
+        $('#create_serial_code').mask('9999999-99-99-9999');
       });
 
       //-- MAIN FUNCTION
@@ -424,6 +463,43 @@
             url: '/multiple_receive/',
             data: {
               'serial_code_list' : serial_code_list,
+              'emp_id' : emp_id,
+              'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
+      }
+
+      function create(){
+        var order_no = $('#order_no').val();
+        var serial_code = $('#create_serial_code').val();
+        var emp_id = $('#create_emp_id').val();
+        var location = $('#create_location').val();
+        if(serial_code.length != 18){
+          invalid('create_serial_code');
+          return;
+        } else if(emp_id == ""){
+          valid('create_serial_code');
+          invalid('create_emp_id');
+          return;
+        } else if (location == ""){
+          valid('create_serial_code');
+          valid('create_emp_id');
+          invalid('create_location');
+          return;
+        } else {
+          valid('create_serial_code');
+          valid('create_emp_id');
+          valid('create_location');
+          $.ajax({
+            url: '/create_serial/',
+            data: {
+              'order_no' : order_no,
+              'serial_code' : serial_code,
               'emp_id' : emp_id,
               'location' : location,
             },

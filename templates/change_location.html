@@ -52,8 +52,48 @@
                   <!-- Left Content -->
                   <div class="col-sm-12 col-md-12">
                     <div class="card border-secondary">
-                      <div class="card-body">
-
+                      <div class="card-body bg-primary text-center text-white">
+                        <br><br><br><br><br>
+                        <div class="row">
+                          <div class="col-md-5">&nbsp;</div>
+                          <div class="col-md-2"><h6>Employee ID</h6></div>
+                          <div class="col-md-5">&nbsp;</div>
+                        </div>
+                        <div class="row mb-2">
+                          <div class="col-md-5"></div>
+                          <div class="col-md-2"><input class="form-control text-center" type="text" id="emp_id"></div>
+                          <div class="col-md-5"></div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5"></div>
+                          <div class="col-md-2"><h6>Location</h6></div>
+                          <div class="col-md-5"></div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5"></div>
+                          <div class="col-md-2"><input class="form-control text-center" type="text" id="location"></div>
+                          <div class="col-md-5"></div>
+                        </div>
+                        <br>
+                        <h1><strong class="text-warning">PLEASE SCAN YOUR BAR CODE HERE</strong></h1>
+                        <br>
+                        <div class="row">
+                          <div class="col-md-3"></div>
+                          <div class="col-md-6">
+                            <input type="text" class="form-control form-control-lg text-center" maxlength="29" id="serial_code" disabled>
+                          </div>
+                          <div class="col-md-3"></div>
+                        </div>
+                        <br><br>
+                        <div class="row">
+                          <div class="col-md-3"></div>
+                          <div class="col-md-6">
+                            <h6 class="text-danger">Serial Code Not Found !</h6>
+                            <h6 class="text-success">Change Location Completed !</h6>
+                          </div>
+                          <div class="col-md-3"></div>
+                        </div>
+                        <br><br><br><br><br><br><br><br><br><br><br><br>
                       </div>
                     </div>
                   </div>
@@ -73,6 +113,8 @@
     <!--<![endif]-->
     <!-- Jqeury JS -->
     <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+    <!-- Datamask JS -->
+    <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -87,6 +129,45 @@
         showTime();
       });
 
+      $("#emp_id").change(function() {
+        if($("#emp_id").val().length == 0){
+          invalid('emp_id');
+          $('#serial_code').prop('disabled', true);
+        } else {
+          valid('emp_id');
+          if($("#location").val().length != 0){
+            $('#serial_code').prop('disabled', false);
+          }
+        }
+      });
+
+      $("#location").change(function() {
+        if($("#location").val().length == 0){
+          invalid('location');
+          $('#serial_code').prop('disabled', true);
+        } else {
+          valid('location');
+          if($("#emp_id").val().length != 0){
+            $('#serial_code').prop('disabled', false);
+          }
+        }
+      });
+
+      //-- VALIDATE CONTROL
+      function valid(box_id){
+        $("#" + box_id).addClass("is-valid");
+        $("#" + box_id).removeClass("is-invalid");
+      }
+
+      function invalid(box_id){
+        $("#" + box_id).addClass("is-invalid");
+        $("#" + box_id).removeClass("is-valid");
+      }
+
+      function invalid_text(text){
+        $('#invalid-icon').prop('hidden', false);
+        $('#invalid-text').text(text);
+      }
     </script>
   </body>
 </html>

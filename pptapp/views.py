@@ -108,6 +108,26 @@ def order(request, order_no):
     }
     return render(request, 'order.html', context)
 
+def create_serial(request):
+    # COLLECT DATA
+    order_no = request.GET.get('order_no')
+    serial_code = request.GET.get('serial_code')
+    emp_id = request.GET.get('emp_id')
+    location = request.GET.get('location')
+    # PREPARE DATA
+    order = Order.objects.get(no=order_no)
+    status = 'CREATED'
+    # SAVE DATA
+    #-- SERIAL CODE
+    serial_new = Serial(code=serial_code,order=order)
+    serial_new.save()
+    #-- PATH
+    path_new = Path(serial=serial_new,emp_id=emp_id,location=location,status=status)
+    path_new.save()
+    data = {
+    }
+    return JsonResponse(data)
+
 def multiple_receive(request):
     # COLLECT DATA
     serial_code_list = request.GET.getlist('serial_code_list[]')
