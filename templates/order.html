@@ -62,26 +62,26 @@
                       </div>
                       <div class="card-body">
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">Production Order No</label>
-                          <div class="col-md-9">
+                          <label class="col-md-4 col-form-label text-right">Production Order No</label>
+                          <div class="col-md-8">
                             <input class="form-control" type="text" maxlength="10" id="order_no" value="{{order.no}}" disabled>
                           </div>
                         </div>
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">Drawing No</label>
-                          <div class="col-md-9">
+                          <label class="col-md-4 col-form-label text-right">Drawing No</label>
+                          <div class="col-md-8">
                             <input class="form-control" type="text" id="drawing_no" value="{{order.drawing_no}}" disabled>
                           </div>
                         </div>
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">FG Code</label>
-                          <div class="col-md-9">
+                          <label class="col-md-4 col-form-label text-right">FG Code</label>
+                          <div class="col-md-8">
                             <input class="form-control" type="text" id="fg_code" value="{{order.fg_code}}" disabled>
                           </div>
                         </div>
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">Creator</label>
-                          <div class="col-md-9">
+                          <label class="col-md-4 col-form-label text-right">Creator</label>
+                          <div class="col-md-8">
                             <input class="form-control" type="text" id="emp_id" value="{{order.emp_id}}" disabled>
                           </div>
                         </div>
@@ -390,7 +390,7 @@
       }
 
       function print_barcode(){
-        var divContents = document.getElementById("barcode_section").innerHTML;  
+        var divContents = document.getElementById("barcode_section").innerHTML;
        var printWindow = window.open('', '', 'height=200,width=400');
        printWindow.document.write('<html><head><title>Print DIV Content</title>');
        printWindow.document.write('</head><body >');
