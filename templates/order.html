@@ -17,7 +17,7 @@
     <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
     <meta name="author" content="Łukasz Holeczek">
     <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
-    <title>Work Order : {{order.no}} | Production Part Traker</title>
+    <title>Production Order : {{order.no}} | Production Part Traker</title>
     <!-- Main styles for this application-->
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <!-- Icon CCS -->
@@ -39,7 +39,7 @@
         <div class="c-subheader justify-content-between px-3">
           <!-- Breadcrumb-->
           <ol class="breadcrumb border-0 m-0 px-0 px-md-3">
-            Work Order : {{order.no}}
+            Production Order : {{order.no}}
           </ol>
           <div class="c-subheader-nav d-md-down-none mfe-2">
 
@@ -55,14 +55,14 @@
               <div class="row">
                   <!-- Left Content -->
                   <div class="col-sm-12 col-md-4">
-                    <!-- Work Order Information -->
+                    <!-- Production Order Information -->
                     <div class="card border-secondary">
                       <div class="card-header">
-                        <strong>Work Order Information</strong>
+                        <strong>Production Order Information</strong>
                       </div>
                       <div class="card-body">
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">Work Order No</label>
+                          <label class="col-md-3 col-form-label text-right">Production Order No</label>
                           <div class="col-md-9">
                             <input class="form-control" type="text" maxlength="10" id="order_no" value="{{order.no}}" disabled>
                           </div>

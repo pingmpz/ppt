@@ -16,7 +16,7 @@
     <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
     <meta name="author" content="Łukasz Holeczek">
     <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
-    <title>New Work Order | Production Part Traker</title>
+    <title>New Production Order | Production Part Traker</title>
     <!-- Main styles for this application-->
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <!-- Icon CCS -->
@@ -38,7 +38,7 @@
         <div class="c-subheader justify-content-between px-3">
           <!-- Breadcrumb-->
           <ol class="breadcrumb border-0 m-0 px-0 px-md-3">
-            New Work Order
+            New Production Order
           </ol>
           <div class="c-subheader-nav d-md-down-none mfe-2">
             <i class="c-icon cil-warning text-danger" id="invalid-icon" hidden></i>&nbsp;<span class="text-danger" id="invalid-text"></span>
@@ -56,14 +56,14 @@
               <div class="row">
                   <!-- Left Content -->
                   <div class="col-sm-12 col-md-4">
-                    <!-- Work Order Information -->
+                    <!-- Production Order Information -->
                     <div class="card border-secondary">
                       <div class="card-header">
-                        <strong>Work Order Information</strong>
+                        <strong>Production Order Information</strong>
                       </div>
                       <div class="card-body">
                         <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-right">Work Order No</label>
+                          <label class="col-md-3 col-form-label text-right">Production Order No</label>
                           <div class="col-md-9">
                             <input class="form-control" type="text" maxlength="10" id="order_no" name="order_no">
                           </div>
@@ -284,7 +284,7 @@
         var order_no = $('#order_no').val();
         if(order_no.length != 10){
           invalid('order_no');
-          invalid_text('Work Order No must have 10 digits.');
+          invalid_text('Production Order No must have 10 digits.');
           _callback(false);
           return;
         }
@@ -297,7 +297,7 @@
           success: function (data) {
             if (data.is_exist) {
               invalid('order_no');
-              invalid_text('Work Order No is already exist.');
+              invalid_text('Production Order No is already exist.');
               _callback(false);
               return;
             } else {
