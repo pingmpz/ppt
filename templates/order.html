@@ -107,6 +107,7 @@
                             <tr class="bg-dark">
                               <th>Item</th>
                               <th>Serial Code</th>
+                              <th></th>
                               <th>Status</th>
                               <th>Employee</th>
                               <th>Location</th>
@@ -119,6 +120,7 @@
                             <tr>
                               <td>{{forloop.counter}}</td>
                               <td>{{serial_code.code}}</td>
+                              <td><button type="button" class="btn btn-sm btn-link small" style="padding-top:0px; padding-bottom:0px;" data-toggle="modal" data-target="#barcode_modal" onclick="prepare_barcode('{{serial_code.code}}')"><i class="c-icon cil-barcode"></i></button></td>
                               <td>
                                 {% if last_status|index:forloop.counter0 == 'CREATED' %}<span class="text-success">Created</span>
                                 {% elif last_status|index:forloop.counter0 == 'RECEIVED' %}<span class="text-info">Received</span>
@@ -326,6 +328,26 @@
           </div>
         </div>
       </div>
+      <!-- Barcode Modal -->
+      <div class="modal fade" id="barcode_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dark" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Barcode : <span id="barcode_serial_code"></span></h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <div id="barcode_section">
+                <svg id="barcode"></svg>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-dark" type="button" onclick="print_barcode()">Print</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- CoreUI and necessary plugins-->
     <script src="{% static "vendors/@coreui/coreui-pro/js/coreui.bundle.min.js" %}"></script>
@@ -338,6 +360,8 @@
     <script src="{% static "vendors/select2/js/select2.min.js" %}"></script>
     <!-- Datamask JS -->
     <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
+    <!-- Barcode JS -->
+    <script src="{% static "vendors/jsbarcode/jsbarcode.all.min.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -360,6 +384,22 @@
       });
 
       //-- MAIN FUNCTION
+      function prepare_barcode(code){
+        $('#barcode_serial_code').text(code);
+        JsBarcode("#barcode", code);
+      }
+
+      function print_barcode(){
+        var divContents = document.getElementById("barcode_section").innerHTML;  
+       var printWindow = window.open('', '', 'height=200,width=400');
+       printWindow.document.write('<html><head><title>Print DIV Content</title>');
+       printWindow.document.write('</head><body >');
+       printWindow.document.write(divContents);
+       printWindow.document.write('</body></html>');
+       printWindow.document.close();
+       printWindow.print();
+      }
+
       function multiple_receive(){
         var order_no = $('#order_no').val();
         var serial_code_list = $('#multiple_receive_serial_code_list').val();
