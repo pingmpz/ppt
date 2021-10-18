@@ -56,21 +56,21 @@
                   <div class="col-sm-12 col-md-12">
                     <div class="card border-secondary">
                       <div class="card-body">
-                        <table class="table table-sm table-striped datatable text-center" id="order_table">
+                        <table class="table table-sm table-striped datatable text-center" id="serial_code_table">
                           <thead>
                             <tr>
                               <th>Work Order No</th>
                               <th>Drawing No</th>
                               <th>FG Code</th>
                               <th>Item</th>
-                              <th>Created By</th>
+                              <th>Creator</th>
                               <th>Created Date</th>
                             </tr>
                           </thead>
                           <tbody>
                             {% for order in orders %}
                             <tr>
-                              <td><a href="#">{{order.no}}</a></td>
+                              <td><a href="/order/{{order.no}}">{{order.no}}</a></td>
                               <td>{{order.drawing_no}}</td>
                               <td>{{order.fg_code}}</td>
                               <td>{{items|index:forloop.counter0}}</td>
@@ -114,7 +114,7 @@
       //-- INITAILIZE
       $(document).ready(function() {
         showTime();
-        $('#order_table').DataTable( {
+        $('#serial_code_table').DataTable( {
             "order": [[ 0, "desc" ]],
             'iDisplayLength': 100,
         });
