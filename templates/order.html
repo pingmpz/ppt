@@ -128,11 +128,13 @@
                               <td>{{last_receivers|index:forloop.counter0}}</td>
                               <td>{{last_locations|index:forloop.counter0}}</td>
                               <td>{{last_timestamps|index:forloop.counter0}}</td>
-                              <td>
+                              <td class="text-left">
                                 <button type="button" class="btn btn-sm btn-pill btn-info small" data-toggle="modal" data-target="#path_{{serial_code.id}}_modal">Path</button>
                                 {% if last_status|index:forloop.counter0 != 'REJECTED' %}
                                 <button type="button" class="btn btn-sm btn-pill btn-primary small" data-toggle="modal" data-target="#receive_modal" onclick="prepare_receive('{{serial_code.id}}','{{serial_code.code}}')">Receive</button>
                                 <button type="button" class="btn btn-sm btn-pill btn-danger small" data-toggle="modal" data-target="#reject_modal" onclick="prepare_reject('{{serial_code.id}}','{{serial_code.code}}')">Reject</button>
+                                {% endif %}
+                                {% if last_status|index:forloop.counter0 == 'CREATED' %}
                                 <button type="button" class="btn btn-sm btn-pill btn-warning small" data-toggle="modal" data-target="#edit_modal" onclick="prepare_edit('{{serial_code.id}}','{{serial_code.code}}')">Edit</button>
                                 {% endif %}
                               </td>
