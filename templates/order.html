@@ -386,7 +386,9 @@
       //-- MAIN FUNCTION
       function prepare_barcode(code){
         $('#barcode_serial_code').text(code);
-        JsBarcode("#barcode", code);
+        JsBarcode("#barcode", code, {
+          displayValue: true
+        });
       }
 
       function print_barcode(){
