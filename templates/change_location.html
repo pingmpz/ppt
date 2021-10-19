@@ -52,7 +52,7 @@
                   <!-- Left Content -->
                   <div class="col-sm-12 col-md-12">
                     <div class="card border-secondary">
-                      <div class="card-body bg-primary text-center text-white">
+                      <div class="card-body text-center text-white" style="background-color:#1f4068;">
                         <br><br><br><br><br>
                         <div class="row">
                           <div class="col-md-5">&nbsp;</div>
@@ -61,7 +61,7 @@
                         </div>
                         <div class="row mb-2">
                           <div class="col-md-5"></div>
-                          <div class="col-md-2"><input class="form-control text-center" type="text" id="emp_id"></div>
+                          <div class="col-md-2"><input class="form-control text-center" type="text" id="emp_id" autocomplete="off"></div>
                           <div class="col-md-5"></div>
                         </div>
                         <div class="row">
@@ -71,20 +71,32 @@
                         </div>
                         <div class="row">
                           <div class="col-md-5"></div>
-                          <div class="col-md-2"><input class="form-control text-center" type="text" id="location"></div>
+                          <div class="col-md-2"><input class="form-control text-center" type="text" id="location" autocomplete="off"></div>
                           <div class="col-md-5"></div>
                         </div>
                         <br>
-                        <h1><strong class="text-warning">PLEASE SCAN YOUR BAR CODE HERE</strong></h1>
+                        <h1><strong class="text-warning">PLEASE SCAN YOUR QR CODE HERE</strong></h1>
                         <br>
                         <div class="row">
                           <div class="col-md-3"></div>
                           <div class="col-md-6">
-                            <input type="text" class="form-control form-control-lg text-center" maxlength="29" id="serial_code" disabled>
+                            <input type="text" class="form-control form-control-lg text-center" maxlength="29" id="serial_code" autocomplete="off" disabled>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
                         <br><br>
+                        <div class="row mb-1">
+                          <div class="col-md-5"></div>
+                          <div class="col-md-2">
+                            <label class="col-form-label c-switch c-switch-sm c-switch-3d c-switch-warning">
+                              <input class="c-switch-input" type="checkbox" id="auto_exc" checked><span class="c-switch-slider"></span>
+                            </label>
+                            &nbsp;<label class="form-label text-left" for="auto_exc">Auto Execute</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-pill btn-warning" id="excute_button" disabled><strong>Execute</strong>
+                          </div>
+                          <div class="col-md-5"></div>
+                        </div>
+                        <br><br><br><br>
                         <div class="row">
                           <div class="col-md-3"></div>
                           <div class="col-md-6">
@@ -93,7 +105,7 @@
                           </div>
                           <div class="col-md-3"></div>
                         </div>
-                        <br><br><br><br><br><br><br><br><br><br><br><br>
+                        <br><br><br><br><br><br>
                       </div>
                     </div>
                   </div>
@@ -129,7 +141,7 @@
         showTime();
       });
 
-      $("#emp_id").change(function() {
+      $("#emp_id").on("change keypress keyup blur" ,function() {
         if($("#emp_id").val().length == 0){
           invalid('emp_id');
           $('#serial_code').prop('disabled', true);
@@ -141,7 +153,7 @@
         }
       });
 
-      $("#location").change(function() {
+      $("#location").on("change keypress keyup blur", function() {
         if($("#location").val().length == 0){
           invalid('location');
           $('#serial_code').prop('disabled', true);
@@ -150,6 +162,14 @@
           if($("#emp_id").val().length != 0){
             $('#serial_code').prop('disabled', false);
           }
+        }
+      });
+
+      $("#auto_exc").on("change", function() {
+        if ($('#auto_exc').is(':checked')) {
+          $("#excute_button").prop('disabled', true);
+        } else {
+          $("#excute_button").prop('disabled', false);
         }
       });
 

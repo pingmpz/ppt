@@ -121,7 +121,7 @@
                             <tr>
                               <td>{{forloop.counter}}</td>
                               <td>{{serial_code.code}}</td>
-                              <td><button type="button" class="btn btn-sm btn-link small" style="padding-top:0px; padding-bottom:0px;" data-toggle="modal" data-target="#barcode_modal" onclick="prepare_barcode('{{serial_code.code}}')"><i class="c-icon cil-barcode"></i></button></td>
+                              <td><button type="button" class="btn btn-sm btn-link small" style="padding-top:0px; padding-bottom:0px;" data-toggle="modal" data-target="#qrcode_modal" onclick="prepare_qrcode('{{serial_code.code}}')"><i class="c-icon cil-qr-code"></i></button></td>
                               <td>
                                 {% if last_status|index:forloop.counter0 == 'CREATED' %}<span class="text-success">Created</span>
                                 {% elif last_status|index:forloop.counter0 == 'RECEIVED' %}<span class="text-info">Received</span>
@@ -366,21 +366,21 @@
           </div>
         </div>
       </div>
-      <!-- Barcode Modal -->
-      <div class="modal fade" id="barcode_modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg modal-dark" role="document">
+      <!-- QR Code Modal -->
+      <div class="modal fade" id="qrcode_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dark" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Barcode : <span id="barcode_serial_code"></span></h4>
+              <h4 class="modal-title">QR Code : <span id="qrcode_serial_code"></span></h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
-            <div class="modal-body text-center">
-              <div id="barcode_section">
-                <svg id="barcode"></svg>
+            <div class="modal-body">
+              <div id="qrcode_section">
+                <div id="qrcode"></div>
               </div>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-dark" type="button" onclick="print_barcode()">Print</button>
+              <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -399,7 +399,9 @@
     <!-- Datamask JS -->
     <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
     <!-- Barcode JS -->
-    <script src="{% static "vendors/jsbarcode/jsbarcode.all.min.js" %}"></script>
+    <script src="{% static "vendors/jsbarcode/js/jsbarcode.all.min.js" %}"></script>
+    <!-- QRcode JS -->
+    <script src="{% static "vendors/qrcode/js/qrcode.min.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -415,6 +417,8 @@
         search: true,
       });
 
+      var qrcode = new QRCode(document.getElementById("qrcode"), "");
+
       //-- INITAILIZE
       $(document).ready(function() {
         showTime();
@@ -423,18 +427,17 @@
       });
 
       //-- MAIN FUNCTION
-      function prepare_barcode(code){
+      function prepare_qrcode(code){
         var order_no = $('#order_no').val();
-        $('#barcode_serial_code').text(code);
-        JsBarcode("#barcode", order_no + "-" + code, {
-          displayValue: true
-        });
+        $('#qrcode_serial_code').text(code);
+        if(qrcode != null) qrcode.clear();
+        qrcode.makeCode(order_no + "-" + code);
       }
 
-      function print_barcode(){
-        var divContents = document.getElementById("barcode_section").innerHTML;
-       var printWindow = window.open('', '', 'height=160,width=440');
-       printWindow.document.write('<html><head><title>Print Barcode</title>');
+      function print_qrcode(){
+        var divContents = document.getElementById("qrcode_section").innerHTML;
+       var printWindow = window.open('', '', 'height=274,width=274');
+       printWindow.document.write('<html><head><title>Print QR Code</title>');
        printWindow.document.write('</head><body>');
        printWindow.document.write(divContents);
        printWindow.document.write('</body></html>');
