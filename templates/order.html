@@ -368,16 +368,15 @@
       </div>
       <!-- QR Code Modal -->
       <div class="modal fade" id="qrcode_modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dark" role="document">
+        <div class="modal-dialog modal-dark" role="document" style="width: 310px;">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">QR Code : <span id="qrcode_serial_code"></span></h4>
+              <h4 class="modal-title">QR Code</h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
-            <div class="modal-body">
-              <div id="qrcode_section">
-                <div id="qrcode"></div>
-              </div>
+            <div class="modal-body" id="qrcode_section">
+                <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
+                <div style="padding-left:15px; display: inline-block; justify-content: center;">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
@@ -417,7 +416,13 @@
         search: true,
       });
 
-      var qrcode = new QRCode(document.getElementById("qrcode"), "");
+      // var qrcode = new QRCode(document.getElementById("qrcode"), "");
+
+      var qrcode = new QRCode(document.getElementById("qrcode"), {
+      	text: "0000000000-0000000-00-00-0000",
+      	width: 75,
+      	height: 75,
+      });
 
       //-- INITAILIZE
       $(document).ready(function() {
@@ -435,8 +440,8 @@
       }
 
       function print_qrcode(){
-        var divContents = document.getElementById("qrcode_section").innerHTML;
-       var printWindow = window.open('', '', 'height=274,width=274');
+       var divContents = document.getElementById("qrcode_section").innerHTML;
+       var printWindow = window.open('', '', 'height=600,width=400');
        printWindow.document.write('<html><head><title>Print QR Code</title>');
        printWindow.document.write('</head><body>');
        printWindow.document.write(divContents);
