@@ -114,8 +114,9 @@
                               <div class="sk-circle11 sk-child"></div>
                               <div class="sk-circle12 sk-child"></div>
                             </div>
-                            <h6 class="text-danger" id="alert_fail" hidden>Serial Code Not Found !</h6>
-                            <h6 class="text-success"id="alert_success" hidden>Change Location Completed !</h6>
+                            <h6 class="text-danger" id="alert_notfound" hidden>SERIAL CODE NOT FOUND !</h6>
+                            <h6 class="text-danger" id="alert_rejected" hidden>THIS SERIAL CODE WAS REJECTED !</h6>
+                            <h6 class="text-success"id="alert_success" hidden>CHANGE LOCATION COMPLETED !</h6>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
@@ -204,7 +205,8 @@
           var order_no = qr_code.substring(0,10);
           var serial_code = qr_code.substring(11,29);
           $("#alert_success").prop('hidden', true);
-          $("#alert_fail").prop('hidden', true);
+          $("#alert_notfound").prop('hidden', true);
+          $("#alert_rejected").prop('hidden', true);
           $("#loading_spinner").prop('hidden', false);
           $("#qr_code").prop('disabled', true);
           $.ajax({
@@ -219,8 +221,10 @@
             success: function (data) {
               if (data.alert == 'SUCCESS') {
                 $("#alert_success").prop('hidden', false);
-              } else {
-                $("#alert_fail").prop('hidden', false);
+              } else if (data.alert == 'NOTFOUND') {
+                $("#alert_notfound").prop('hidden', false);
+              } else if (data.alert == 'REJECTED') {
+                $("#alert_rejected").prop('hidden', false);
               }
               $("#loading_spinner").prop('hidden', true);
               $("#qr_code").val('');

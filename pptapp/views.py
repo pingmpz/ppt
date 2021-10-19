@@ -13,7 +13,7 @@ def change_location(request):
     return render(request, 'change_location.html', context)
 
 def exc_change_location(request):
-    alert = 'FAIL'
+    alert = 'NOTFOUND'
     order_no = request.GET.get('order_no')
     serial_code = request.GET.get('serial_code')
     emp_id = request.GET.get('emp_id')
@@ -23,12 +23,15 @@ def exc_change_location(request):
         order = Order.objects.get(no=order_no)
         serial_is_exist = Serial.objects.filter(code=serial_code,order=order).exists()
         if(serial_is_exist == True):
-            alert = 'SUCCESS'
-            status = 'RECEIVED'
+            alert = 'REJECTED'
             serial = Serial.objects.get(code=serial_code)
-            #-- SAVE PATH
-            path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
-            path_new.save()
+            last_path = Path.objects.filter(serial=serial).order_by('-date_published')[0]
+            if(last_path.status != 'REJECTED'):
+                #-- SAVE PATH
+                alert = 'SUCCESS'
+                status = 'RECEIVED'
+                path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
+                path_new.save()
     data = {
         'alert': alert,
     }

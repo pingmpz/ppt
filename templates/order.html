@@ -375,8 +375,9 @@
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="qrcode_section">
+                <svg id="barcode"></svg><br>
                 <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
-                <div style="padding-left:15px; display: inline-block; justify-content: center;">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
+                <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
@@ -437,6 +438,12 @@
         $('#qrcode_serial_code').text(code);
         if(qrcode != null) qrcode.clear();
         qrcode.makeCode(order_no + "-" + code);
+
+        JsBarcode("#barcode", order_no + "-" + code, {
+          width: 0.90,
+        	height: 60,
+          fontSize: 10,
+        });
       }
 
       function print_qrcode(){
