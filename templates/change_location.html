@@ -80,7 +80,7 @@
                         <div class="row">
                           <div class="col-md-3"></div>
                           <div class="col-md-6">
-                            <input type="text" class="form-control form-control-lg text-center" maxlength="29" id="serial_code" autocomplete="off" disabled>
+                            <input type="text" class="form-control form-control-lg text-center" maxlength="29" id="qr_code" autocomplete="off" disabled>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
@@ -92,7 +92,7 @@
                               <input class="c-switch-input" type="checkbox" id="auto_exc" checked><span class="c-switch-slider"></span>
                             </label>
                             &nbsp;<label class="form-label text-left" for="auto_exc">Auto Execute</label>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-pill btn-warning" id="excute_button" disabled><strong>Execute</strong>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-pill btn-warning" id="excute_button" onclick="excute()" disabled><strong>Execute</strong>
                           </div>
                           <div class="col-md-5"></div>
                         </div>
@@ -100,8 +100,22 @@
                         <div class="row">
                           <div class="col-md-3"></div>
                           <div class="col-md-6">
-                            <h6 class="text-danger">Serial Code Not Found !</h6>
-                            <h6 class="text-success">Change Location Completed !</h6>
+                            <div class="sk-circle" id="loading_spinner" hidden>
+                              <div class="sk-circle1 sk-child"></div>
+                              <div class="sk-circle2 sk-child"></div>
+                              <div class="sk-circle3 sk-child"></div>
+                              <div class="sk-circle4 sk-child"></div>
+                              <div class="sk-circle5 sk-child"></div>
+                              <div class="sk-circle6 sk-child"></div>
+                              <div class="sk-circle7 sk-child"></div>
+                              <div class="sk-circle8 sk-child"></div>
+                              <div class="sk-circle9 sk-child"></div>
+                              <div class="sk-circle10 sk-child"></div>
+                              <div class="sk-circle11 sk-child"></div>
+                              <div class="sk-circle12 sk-child"></div>
+                            </div>
+                            <h6 class="text-danger" id="alert_fail" hidden>Serial Code Not Found !</h6>
+                            <h6 class="text-success"id="alert_success" hidden>Change Location Completed !</h6>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
@@ -136,6 +150,8 @@
         }, 2000);
       });
 
+      var isExcuting = false;
+
       //-- INITAILIZE
       $(document).ready(function() {
         showTime();
@@ -144,11 +160,11 @@
       $("#emp_id").on("change keypress keyup blur" ,function() {
         if($("#emp_id").val().length == 0){
           invalid('emp_id');
-          $('#serial_code').prop('disabled', true);
+          $('#qr_code').prop('disabled', true);
         } else {
           valid('emp_id');
           if($("#location").val().length != 0){
-            $('#serial_code').prop('disabled', false);
+            $('#qr_code').prop('disabled', false);
           }
         }
       });
@@ -156,11 +172,11 @@
       $("#location").on("change keypress keyup blur", function() {
         if($("#location").val().length == 0){
           invalid('location');
-          $('#serial_code').prop('disabled', true);
+          $('#qr_code').prop('disabled', true);
         } else {
           valid('location');
           if($("#emp_id").val().length != 0){
-            $('#serial_code').prop('disabled', false);
+            $('#qr_code').prop('disabled', false);
           }
         }
       });
@@ -172,6 +188,49 @@
           $("#excute_button").prop('disabled', false);
         }
       });
+
+      $("#qr_code").on("change keypress keyup blur", function() {
+        if($("#qr_code").val().length == 29 && $('#auto_exc').is(':checked')){
+          excute();
+        }
+      });
+
+      function excute(){
+        if(isExcuting == false){
+          isExcuting = true;
+          var emp_id = $("#emp_id").val();
+          var location = $("#location").val();
+          var qr_code = $("#qr_code").val();
+          var order_no = qr_code.substring(0,10);
+          var serial_code = qr_code.substring(11,29);
+          $("#alert_success").prop('hidden', true);
+          $("#alert_fail").prop('hidden', true);
+          $("#loading_spinner").prop('hidden', false);
+          $("#qr_code").prop('disabled', true);
+          $.ajax({
+            url: '/exc_change_location/',
+            data: {
+              'order_no': order_no,
+              'serial_code' : serial_code,
+              'emp_id' : emp_id,
+              'location' : location,
+            },
+            dataType: 'json',
+            success: function (data) {
+              if (data.alert == 'SUCCESS') {
+                $("#alert_success").prop('hidden', false);
+              } else {
+                $("#alert_fail").prop('hidden', false);
+              }
+              $("#loading_spinner").prop('hidden', true);
+              $("#qr_code").val('');
+              $("#qr_code").prop('disabled', false);
+              $("#qr_code").focus();
+              isExcuting = false;
+            }
+          });
+        }
+      }
 
       //-- VALIDATE CONTROL
       function valid(box_id){

@@ -12,6 +12,28 @@ def change_location(request):
     }
     return render(request, 'change_location.html', context)
 
+def exc_change_location(request):
+    alert = 'FAIL'
+    order_no = request.GET.get('order_no')
+    serial_code = request.GET.get('serial_code')
+    emp_id = request.GET.get('emp_id')
+    location = request.GET.get('location')
+    order_is_exist = Order.objects.filter(no=order_no).exists()
+    if(order_is_exist == True):
+        order = Order.objects.get(no=order_no)
+        serial_is_exist = Serial.objects.filter(code=serial_code,order=order).exists()
+        if(serial_is_exist == True):
+            alert = 'SUCCESS'
+            status = 'RECEIVED'
+            serial = Serial.objects.get(code=serial_code)
+            #-- SAVE PATH
+            path_new = Path(serial=serial,emp_id=emp_id,location=location,status=status)
+            path_new.save()
+    data = {
+        'alert': alert,
+    }
+    return JsonResponse(data)
+
 def new_workorder(request):
     context = {
     }
