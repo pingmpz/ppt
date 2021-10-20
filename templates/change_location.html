@@ -43,7 +43,7 @@
         </div>
       </header>
       <!-- *** BODY *** -->
-      <div class="c-body">
+      <div class="c-body" style="background-color:#1f4068;">
         <main class="c-main">
           <div class="container-fluid">
             <div class="fade-in">
@@ -51,7 +51,7 @@
               <div class="row">
                   <!-- Left Content -->
                   <div class="col-sm-12 col-md-12">
-                    <div class="card border-secondary">
+                    <div class="card">
                       <div class="card-body text-center text-white" style="background-color:#1f4068;">
                         <br><br><br><br><br>
                         <div class="row">
@@ -114,9 +114,10 @@
                               <div class="sk-circle11 sk-child"></div>
                               <div class="sk-circle12 sk-child"></div>
                             </div>
-                            <h6 class="text-danger" id="alert_notfound" hidden>SERIAL CODE NOT FOUND !</h6>
-                            <h6 class="text-danger" id="alert_rejected" hidden>THIS SERIAL CODE WAS REJECTED !</h6>
-                            <h6 class="text-success"id="alert_success" hidden>CHANGE LOCATION COMPLETED !</h6>
+                            <h2 class="text-danger" id="alert_empty">&nbsp;</h2>
+                            <h2 class="text-danger" id="alert_notfound" hidden>SERIAL CODE NOT FOUND !</h2>
+                            <h2 class="text-danger" id="alert_rejected" hidden>THIS SERIAL CODE WAS REJECTED !</h2>
+                            <h2 class="text-success"id="alert_success" hidden>CHANGE LOCATION COMPLETED !</h2>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
@@ -204,6 +205,7 @@
           var qr_code = $("#qr_code").val();
           var order_no = qr_code.substring(0,10);
           var serial_code = qr_code.substring(11,29);
+          $("#alert_empty").prop('hidden', true);
           $("#alert_success").prop('hidden', true);
           $("#alert_notfound").prop('hidden', true);
           $("#alert_rejected").prop('hidden', true);
