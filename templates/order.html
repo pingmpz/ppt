@@ -375,10 +375,14 @@
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="qrcode_section">
-                <div>
-                  <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
+              <div>
+                <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
+                <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
+              </div>
+                <!-- <div>
+                  <div id="qrcode" style="padding-left:15px; width:75px; height:75px; display: inline-block;"></div>
                   <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
-                </div>
+                </div> -->
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
@@ -403,6 +407,8 @@
     <script src="{% static "vendors/jsbarcode/js/jsbarcode.all.min.js" %}"></script>
     <!-- QRcode JS -->
     <script src="{% static "vendors/qrcode/js/qrcode.min.js" %}"></script>
+    <!-- Custom JS -->
+    <script src="{% static "vendors/html2canvas/js/html2canvas.min.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -442,14 +448,15 @@
       }
 
       function print_qrcode(){
-       var divContents = document.getElementById("qrcode_section").innerHTML;
-       var printWindow = window.open('', '', 'height=600,width=800');
-       printWindow.document.write('<html><head><title>Print QR Code</title>');
-       printWindow.document.write('</head><body>');
-       printWindow.document.write('<div><p>&nbsp;</p></div><div style="margin-top:70px; margin-left:30px;">' + divContents + '</div>');
-       printWindow.document.write('</body></html>');
-       printWindow.document.close();
-       printWindow.print();
+       html2canvas(document.querySelector("#qrcode_section")).then(canvas => {
+         var printWindow = window.open('', '', 'height=600,width=800');
+         printWindow.document.write('<html><head><title>Print QR Code</title>');
+         printWindow.document.write('</head><body>');
+         printWindow.document.body.appendChild(canvas);
+         printWindow.document.write('</body></html>');
+         printWindow.document.close();
+         printWindow.print();
+       });
       }
 
       function multiple_receive(){
