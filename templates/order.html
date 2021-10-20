@@ -445,6 +445,7 @@
       }
 
       function print_qrcode(){
+       $("#qrcode_modal .close").click();
        html2canvas(document.querySelector("#qrcode_section")).then(canvas => {
          var printWindow = window.open('', '', 'height=600,width=800');
          printWindow.document.write('<html><head><title>Print QR Code</title>');
