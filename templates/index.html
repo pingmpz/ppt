@@ -49,11 +49,85 @@
             <div class="fade-in">
               <!-- Main Body -->
               <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <div class="card text-white" style="background-color:#1f4068;">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-4 text-right"><label class="col-form-label text-warning"><strong>PLEASE SCAN YOUR QR CODE HERE</strong></label></div>
+                        <div class="col-md-5"><input type="text" class="form-control text-center" maxlength="29" id="qr_code" autocomplete="off"></div>
+                        <div class="col-md-3">
+                          <label class="col-form-label c-switch c-switch-sm c-switch-3d c-switch-warning">
+                            <input class="c-switch-input" type="checkbox" id="auto_exc" checked><span class="c-switch-slider"></span>
+                          </label>
+                          &nbsp;<label class="form-label text-left" for="auto_exc">Auto Execute</label>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-pill btn-warning" id="excute_button" onclick="excute()" disabled><strong>Execute</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
                   <!-- Left Content -->
-                  <div class="col-sm-12 col-md-12">
-                    <div class="card border-secondary">
+                  <div class="col-sm-12 col-md-4">
+                    <div class="card">
+                      <div class="card-header">
+                        <strong>Detail</strong>
+                      </div>
                       <div class="card-body">
-
+                        <div class="form-group row">
+                          <label class="col-md-4 col-form-label text-right">Serial Code</label>
+                          <div class="col-md-8">
+                            <input class="form-control" type="text" maxlength="18" id="serial_code" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-4 col-form-label text-right">Production Order No</label>
+                          <div class="col-md-8">
+                            <input class="form-control" type="text" maxlength="10" id="order_no" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-4 col-form-label text-right">Drawing No</label>
+                          <div class="col-md-8">
+                            <input class="form-control" type="text" id="drawing_no" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-4 col-form-label text-right">FG Code</label>
+                          <div class="col-md-8">
+                            <input class="form-control" type="text" id="fg_code" disabled>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-4 col-form-label text-right">Creator</label>
+                          <div class="col-md-8">
+                            <input class="form-control" type="text" id="emp_id" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Right Content -->
+                  <div class="col-sm-12 col-md-8">
+                    <div class="card">
+                      <div class="card-header">
+                        <strong>Path</strong>
+                      </div>
+                      <div class="card-body">
+                        <table class="table table-sm text-center">
+                          <thead>
+                            <tr class="bg-dark">
+                              <th>No</th>
+                              <th>Status</th>
+                              <th>Employee</th>
+                              <th>Location</th>
+                              <th>Timestamp</th>
+                            </tr>
+                          </thead>
+                          <tbody id="path_table_body">
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>
@@ -73,6 +147,8 @@
     <!--<![endif]-->
     <!-- Jqeury JS -->
     <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+    <!-- Datamask JS -->
+    <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -82,11 +158,102 @@
         }, 2000);
       });
 
+      var isExcuting = false;
+
       //-- INITAILIZE
       $(document).ready(function() {
         showTime();
       });
 
+      $("#auto_exc").on("change", function() {
+        if ($('#auto_exc').is(':checked')) {
+          $("#excute_button").prop('disabled', true);
+        } else {
+          $("#excute_button").prop('disabled', false);
+        }
+      });
+
+      $("#qr_code").on("change keypress keyup blur", function() {
+        if($("#qr_code").val().length == 29 && $('#auto_exc').is(':checked')){
+          excute();
+        }
+      });
+
+      function excute(){
+        if(isExcuting == false){
+          isExcuting = true;
+          var qr_code = $("#qr_code").val();
+          var order_no = qr_code.substring(0,10);
+          var serial_code = qr_code.substring(11,29);
+          $('#serial_code').val("");
+          $('#order_no').val("");
+          $('#drawing_no').val("");
+          $('#fg_code').val("");
+          $('#emp_id').val("");
+          $("#path_table_body tr").remove();
+          $("#qr_code").prop('disabled', true);
+          $.ajax({
+            url: '/track_serial/',
+            data: {
+              'order_no': order_no,
+              'serial_code' : serial_code,
+            },
+            dataType: 'json',
+            success: function (data) {
+              if(data.alert == 'FOUND'){
+                $('#serial_code').val(data.serial_code);
+                $('#order_no').val(data.order_no);
+                $('#drawing_no').val(data.drawing_no);
+                $('#fg_code').val(data.fg_code);
+                $('#emp_id').val(data.creator);
+                for(var i = 0;i < data.path_length;i++){
+                  row = "";
+                  row += "<tr>";
+                  row += "<td>";
+                  row += (i + 1);
+                  row += "</td>";
+                  row += "<td>";
+                  row += data.path_status[i];
+                  row += "</td>";
+                  row += "<td>";
+                  row += data.path_emp_id[i];
+                  row += "</td>";
+                  row += "<td>";
+                  row += data.path_location[i];
+                  row += "</td>";
+                  row += "<td>";
+                  row += data.path_time_stamp[i];
+                  row += "</td>";
+                  row += "</tr>";
+                  $("#path_table_body").append(row);
+                }
+              } else {
+
+              }
+              $("#qr_code").val('');
+              $("#qr_code").prop('disabled', false);
+              $("#qr_code").focus();
+              isExcuting = false;
+            }
+          });
+        }
+      }
+
+      //-- VALIDATE CONTROL
+      function valid(box_id){
+        $("#" + box_id).addClass("is-valid");
+        $("#" + box_id).removeClass("is-invalid");
+      }
+
+      function invalid(box_id){
+        $("#" + box_id).addClass("is-invalid");
+        $("#" + box_id).removeClass("is-valid");
+      }
+
+      function invalid_text(text){
+        $('#invalid-icon').prop('hidden', false);
+        $('#invalid-text').text(text);
+      }
     </script>
   </body>
 </html>

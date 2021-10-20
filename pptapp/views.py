@@ -7,6 +7,52 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
+def track_serial(request):
+    alert = 'NOTFOUND'
+    order_no = request.GET.get('order_no')
+    serial_code = request.GET.get('serial_code')
+    drawing_no = '-'
+    fg_code = '-'
+    creator = '-'
+    path_length = 0
+    path_status = []
+    path_emp_id = []
+    path_location = []
+    path_time_stamp = []
+    order_is_exist = Order.objects.filter(no=order_no).exists()
+    if(order_is_exist == True):
+        order = Order.objects.get(no=order_no)
+        order_no = order.no
+        drawing_no = order.drawing_no
+        fg_code = order.fg_code
+        creator = order.emp_id
+        serial_is_exist = Serial.objects.filter(code=serial_code,order=order).exists()
+        if(serial_is_exist == True):
+            alert = 'FOUND'
+            serial = Serial.objects.get(code=serial_code)
+            #-- GET ALL PATH
+            paths = Path.objects.filter(serial=serial).order_by('date_published')
+            path_length = len(paths)
+            for path in paths:
+                path_status.append(path.status)
+                path_emp_id.append(path.emp_id)
+                path_location.append(path.location)
+                path_time_stamp.append(path.date_published)
+    data = {
+        'alert': alert,
+        'serial_code' : serial_code,
+        'order_no' : order_no,
+        'drawing_no' : drawing_no,
+        'fg_code' : fg_code,
+        'creator' : creator,
+        'path_length' : path_length,
+        'path_status' : path_status,
+        'path_emp_id' : path_emp_id,
+        'path_location' : path_location,
+        'path_time_stamp' : path_time_stamp,
+    }
+    return JsonResponse(data)
+
 def change_location(request):
     context = {
     }
