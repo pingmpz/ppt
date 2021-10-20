@@ -37,7 +37,7 @@ def track_serial(request):
                 path_status.append(path.status)
                 path_emp_id.append(path.emp_id)
                 path_location.append(path.location)
-                path_time_stamp.append(path.date_published)
+                path_time_stamp.append(path.date_published.strftime("%b. %d, %Y, %I:%M %p"))
     data = {
         'alert': alert,
         'serial_code' : serial_code,

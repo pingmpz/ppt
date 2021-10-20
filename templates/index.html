@@ -206,14 +206,26 @@
                 $('#drawing_no').val(data.drawing_no);
                 $('#fg_code').val(data.fg_code);
                 $('#emp_id').val(data.creator);
+                var status_color = 'dark';
+                var staus_text = '-';
                 for(var i = 0;i < data.path_length;i++){
+                  if(data.path_status[i] == 'CREATED'){
+                    status_color = 'success';
+                    staus_text = 'Created';
+                  } else if(data.path_status[i] == 'RECEIVED'){
+                    status_color = 'info';
+                    staus_text = 'Received';
+                  } else if(data.path_status[i] == 'REJECRED'){
+                    status_color = 'danger';
+                    staus_text = 'Rejected';
+                  }
                   row = "";
                   row += "<tr>";
                   row += "<td>";
                   row += (i + 1);
                   row += "</td>";
-                  row += "<td>";
-                  row += data.path_status[i];
+                  row += "<td class='text-" + status_color + "'>";
+                  row += staus_text;
                   row += "</td>";
                   row += "<td>";
                   row += data.path_emp_id[i];
