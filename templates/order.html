@@ -375,8 +375,10 @@
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="qrcode_section">
-                <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
-                <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
+                <div>
+                  <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
+                  <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
+                </div>
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
@@ -437,20 +439,14 @@
         $('#qrcode_serial_code').text(code);
         if(qrcode != null) qrcode.clear();
         qrcode.makeCode(order_no + "-" + code);
-
-        // JsBarcode("#barcode", order_no + "-" + code, {
-        //   width: 0.90,
-        // 	height: 60,
-        //   fontSize: 10,
-        // });
       }
 
       function print_qrcode(){
        var divContents = document.getElementById("qrcode_section").innerHTML;
-       var printWindow = window.open('', '', 'height=600,width=400');
+       var printWindow = window.open('', '', 'height=600,width=800');
        printWindow.document.write('<html><head><title>Print QR Code</title>');
        printWindow.document.write('</head><body>');
-       printWindow.document.write(divContents);
+       printWindow.document.write('<div><p>&nbsp;</p></div><div style="margin-top:70px; margin-left:30px;">' + divContents + '</div>');
        printWindow.document.write('</body></html>');
        printWindow.document.close();
        printWindow.print();

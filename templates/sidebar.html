@@ -1,3 +1,4 @@
+{% load static %}
 <style media="screen">
   .text-sky {
       color:#8ed6c0;
@@ -6,7 +7,10 @@
 <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show c-sidebar-unfoldable" id="sidebar">
   <div class="c-sidebar-brand d-md-down-none">
     <h4 class="c-sidebar-brand-full text-center"><span class="text-sky">ᴘʀᴏᴅᴜᴄᴛɪᴏɴ ᴘᴀʀᴛ</span><br><span class="text-white">ᴛʀᴀᴄᴋᴇʀ</span></h4>
-    <h4 class="c-sidebar-brand-minimized"><span class="text-sky">ᴘᴘᴛ</span></h4>
+    <h4 class="c-sidebar-brand-minimized">
+      <img src="{% static 'assets/custom/tracking-icon-colored.png' %}" width="35" height="35" alt="ᴘᴘᴛ">
+      <!-- <span class="text-sky">ᴘᴘᴛ</span> -->
+    </h4>
   </div>
 
   <ul class="c-sidebar-nav">
