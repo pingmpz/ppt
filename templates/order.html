@@ -376,13 +376,9 @@
             </div>
             <div class="modal-body" id="qrcode_section">
               <div>
-                <div id="qrcode" style="width:75px; height:75px; display: inline-block;"></div>
-                <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
+                <div id="qrcode" style="padding-top:5px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
+                <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
               </div>
-                <!-- <div>
-                  <div id="qrcode" style="padding-left:15px; width:75px; height:75px; display: inline-block;"></div>
-                  <div style="padding-left:15px; display: inline-block; justify-content: center; font-family: 'Gill Sans', sans-serif">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
-                </div> -->
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
