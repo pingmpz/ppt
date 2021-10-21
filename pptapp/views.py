@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Employee, Order, Serial, Path
 from django.http import JsonResponse
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment, PatternFill
 
 def index(request):
     context = {
@@ -257,3 +259,33 @@ def serial_edit(request):
     data = {
     }
     return JsonResponse(data)
+
+def import_data(request):
+    wb = load_workbook(filename = 'media/data.xlsx')
+    ws = wb.worksheets[0]
+    skip_count = 2
+    for i in range(ws.max_row + 1):
+        if i < skip_count:
+            continue
+        fg_code = ws['A' + str(i)].value
+        order_no = ws['B' + str(i)].value
+        serial_code = ws['C' + str(i)].value
+        drawing_no='-'
+        emp_id = '5731'
+        location = '-'
+        status = 'CREATED'
+        #-- WORK ORDER
+        order_is_exist = Order.objects.filter(no=order_no).exists()
+        if(order_is_exist == False):
+            order_new = Order(no=order_no,drawing_no=drawing_no,fg_code=fg_code,emp_id=emp_id)
+            order_new.save()
+        order = Order.objects.get(no=order_no)
+        serial_is_exist = Serial.objects.filter(code=serial_code,order=order).exists()
+        if(serial_is_exist == False):
+            #-- SERIAL CODE
+            serial_new = Serial(code=serial_code,order=order)
+            serial_new.save()
+            #-- PATH
+            path_new = Path(serial=serial_new,emp_id=emp_id,location=location,status=status)
+            path_new.save()
+    return redirect('/new_workorder/')
