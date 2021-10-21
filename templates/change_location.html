@@ -73,7 +73,7 @@
                           <div class="col-md-2"><input class="form-control text-center" type="text" id="location" autocomplete="off"></div>
                           <div class="col-md-5"></div>
                         </div>
-                        <br>  
+                        <br>
                         <h1><strong class="text-warning">PLEASE SCAN YOUR QR CODE HERE</strong></h1>
                         <br>
                         <div class="row">
@@ -113,14 +113,15 @@
                               <div class="sk-circle11 sk-child"></div>
                               <div class="sk-circle12 sk-child"></div>
                             </div>
-                            <h2 class="text-danger" id="alert_empty">&nbsp;</h2>
+                            <h1 class="text-danger" id="alert_empty">&nbsp;</h2>
                             <h2 class="text-danger" id="alert_notfound" hidden>SERIAL CODE NOT FOUND !</h2>
+                            <h5 class="text-white" id="alert_text" hidden><span id="alert_text_order_no"></span> | <span id="alert_text_serial_code"></span></h5>
                             <h2 class="text-danger" id="alert_rejected" hidden>THIS SERIAL CODE WAS REJECTED !</h2>
                             <h2 class="text-success"id="alert_success" hidden>CHANGE LOCATION COMPLETED !</h2>
                           </div>
                           <div class="col-md-3"></div>
                         </div>
-                        <br><br><br><br><br><br>
+                        <br><br><br><br><br>
                       </div>
                     </div>
                   </div>
@@ -205,6 +206,7 @@
           var order_no = qr_code.substring(0,10);
           var serial_code = qr_code.substring(11,29);
           $("#alert_empty").prop('hidden', true);
+          $("#alert_text").prop('hidden', true);
           $("#alert_success").prop('hidden', true);
           $("#alert_notfound").prop('hidden', true);
           $("#alert_rejected").prop('hidden', true);
@@ -222,10 +224,16 @@
             success: function (data) {
               if (data.alert == 'SUCCESS') {
                 $("#alert_success").prop('hidden', false);
+                $("#alert_text_order_no").text(order_no);
+                $("#alert_text_serial_code").text(serial_code);
+                $("#alert_text").prop('hidden', false);
               } else if (data.alert == 'NOTFOUND') {
                 $("#alert_notfound").prop('hidden', false);
               } else if (data.alert == 'REJECTED') {
                 $("#alert_rejected").prop('hidden', false);
+                $("#alert_text_order_no").text(order_no);
+                $("#alert_text_serial_code").text(serial_code);
+                $("#alert_text").prop('hidden', false);
               }
               $("#loading_spinner").prop('hidden', true);
               $("#qr_code").val('');
