@@ -97,6 +97,15 @@ def validate_order_no(request):
     }
     return JsonResponse(data)
 
+def validate_serial_code(request):
+    order_no = request.GET.get('order_no')
+    serial_code = request.GET.get('serial_code')
+    order = Order.objects.get(no=order_no)
+    data = {
+        'is_exist': Serial.objects.filter(code=serial_code,order=order).exists()
+    }
+    return JsonResponse(data)
+
 def new_workorder_save(request):
     # COLLECT DATA
     order_no = request.POST.get('order_no')

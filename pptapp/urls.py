@@ -11,6 +11,7 @@ urlpatterns = [
 
     path('new_workorder/', views.new_workorder, name='new_workorder'),
     path('validate_order_no/', views.validate_order_no, name='validate_order_no'),
+    path('validate_serial_code/', views.validate_serial_code, name='validate_serial_code'),
     path('new_workorder_save/', views.new_workorder_save, name='new_workorder_save'),
 
     path('order_master/', views.order_master, name='order_master'),

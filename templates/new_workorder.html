@@ -148,7 +148,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
-                      <a href="/import_data/" class="btn btn-lg btn-primary text-white small" style="width: 80px"><i class="c-icon c-icon-xl cil-cloud-upload"></i><br>Upload</a>
+                      <a href="/import_data/" class="btn btn-lg btn-primary text-white small" style="width: 80px" hidden><i class="c-icon c-icon-xl cil-cloud-upload"></i><br>Upload</a>
                       <button type="button" class="btn btn-lg btn-success small" style="width: 80px" id="save_button" onclick="save()"><i class="c-icon c-icon-xl cil-save"></i><br>Save</button>
                       <p></p>
                     </div>
@@ -222,8 +222,17 @@
       }
 
       function add_serial_code(){
+        $("#serial_code_add").removeClass("is-invalid");
         var serial_code_add = $("#serial_code_add").val();
+        var serial_code_count = $('#serial_code_count').val();
         if(serial_code_add.length != 18) return;
+        for(var i = 0;i < serial_code_count;i++){
+          var serial_code = $('#serial_code_' + i).val();
+          if(serial_code_add == serial_code){
+            invalid('serial_code_add');
+            return;
+          }
+        }
         buildRow(serial_code_add);
         //-- Auto Increment Logic
         if ($('#auto_inc').is(':checked')) {

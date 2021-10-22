@@ -497,33 +497,39 @@
         if(serial_code.length != 18){
           invalid('create_serial_code');
           return;
-        } else if(emp_id == ""){
-          valid('create_serial_code');
-          invalid('create_emp_id');
-          return;
-        } else if (location == ""){
-          valid('create_serial_code');
-          valid('create_emp_id');
-          invalid('create_location');
-          return;
-        } else {
-          valid('create_serial_code');
-          valid('create_emp_id');
-          valid('create_location');
-          $.ajax({
-            url: '/create_serial/',
-            data: {
-              'order_no' : order_no,
-              'serial_code' : serial_code,
-              'emp_id' : emp_id,
-              'location' : location,
-            },
-            dataType: 'json',
-            success: function (data) {
-              window.location.replace("/order/" + order_no);
-            }
-          });
         }
+        validate_serial_code(serial_code, function(result) {
+          if(!result){
+            invalid('create_serial_code');
+            return;
+          } else if(emp_id == ""){
+            valid('create_serial_code');
+            invalid('create_emp_id');
+            return;
+          } else if (location == ""){
+            valid('create_serial_code');
+            valid('create_emp_id');
+            invalid('create_location');
+            return;
+          } else {
+            valid('create_serial_code');
+            valid('create_emp_id');
+            valid('create_location');
+            $.ajax({
+              url: '/create_serial/',
+              data: {
+                'order_no' : order_no,
+                'serial_code' : serial_code,
+                'emp_id' : emp_id,
+                'location' : location,
+              },
+              dataType: 'json',
+              success: function (data) {
+                window.location.replace("/order/" + order_no);
+              }
+            });
+          }
+        });
       }
 
       function prepare_receive(id, code){
@@ -605,23 +611,51 @@
         var order_no = $('#order_no').val();
         var serial_code_id = $('#edit_serial_code_id').val();
         var new_serial_code = $('#new_serial_code').val();
-        if(new_serial_code == ""){
+        if(new_serial_code.length != 18){
           invalid('new_serial_code');
           return;
         } else {
-          valid('new_serial_code');
-          $.ajax({
-            url: '/serial_edit/',
-            data: {
-              'serial_code_id' : serial_code_id,
-              'new_serial_code' : new_serial_code,
-            },
-            dataType: 'json',
-            success: function (data) {
-              window.location.replace("/order/" + order_no);
+          validate_serial_code(new_serial_code, function(result) {
+            if(!result){
+              invalid('new_serial_code');
+              return;
+            } else {
+              valid('new_serial_code');
+              $.ajax({
+                url: '/serial_edit/',
+                data: {
+                  'serial_code_id' : serial_code_id,
+                  'new_serial_code' : new_serial_code,
+                },
+                dataType: 'json',
+                success: function (data) {
+                  window.location.replace("/order/" + order_no);
+                }
+              });
             }
           });
         }
+      }
+
+      function validate_serial_code(serial_code, _callback){
+        var order_no = $('#order_no').val();
+        $.ajax({
+          url: '/validate_serial_code/',
+          data: {
+            'order_no': order_no,
+            'serial_code': serial_code,
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.is_exist) {
+              _callback(false);
+              return;
+            } else {
+              _callback(true);
+              return;
+            }
+          }
+        });
       }
 
       //-- VALIDATE CONTROL
