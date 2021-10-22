@@ -93,7 +93,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
-                      <!-- <button type="button" class="btn btn-lg btn-dark small" style="width: 80px" data-toggle="modal" data-target="#create_serial_code_modal"><i class="c-icon c-icon-xl cil-qr-code"></i><br>Print All</button> -->
+                      <button type="button" class="btn btn-lg btn-dark small" style="width: 80px" data-toggle="modal" data-target="#print_all_modal"><i class="c-icon c-icon-xl cil-qr-code"></i><br>Print All</button>
                       <button type="button" class="btn btn-lg btn-success small" style="width: 80px" data-toggle="modal" data-target="#create_serial_code_modal"><i class="c-icon c-icon-xl cil-plus"></i><br>Create</button>
                       <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-chevron-double-right"></i><br>Multiple</button>
                       <p></p>
@@ -104,6 +104,7 @@
                         <strong>Serial Code List ({{serial_codes|length}})</strong>
                       </div>
                       <div class="card-body">
+                        <input type="text" id="serial_code_count" value="{{serial_codes|length}}" hidden>
                         <table class="table table-sm text-center" id="serial_code_table">
                           <thead>
                             <tr class="bg-dark">
@@ -382,7 +383,32 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-dark" type="button" onclick="print_qrcode()">Print</button>
+              <button class="btn btn-dark" type="button" onclick="print_qrcode('#qrcode_section')">Print</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Print All Modal -->
+      <div class="modal fade" id="print_all_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dark" role="document" style="width: 310px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Print All QR Code</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body" id="print_all_section">
+              <div style="margin-bottom:102px"></div>
+              {% for serial_code in serial_codes %}
+              <div>
+                <div id="qrcode_{{forloop.counter0}}" style="padding-top:5px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
+                <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code_{{forloop.counter0}}">{{serial_code.code}}</span><br>&nbsp;</div>
+              </div>
+              <div style="margin-bottom:32px"></div>
+              {% endfor %}
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-dark" type="button" onclick="print_qrcode('#print_all_section')">Print</button>
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -421,13 +447,13 @@
         search: true,
       });
 
-      // var qrcode = new QRCode(document.getElementById("qrcode"), "");
-
       var qrcode = new QRCode(document.getElementById("qrcode"), {
       	text: "0000000000-0000000-00-00-0000",
       	width: 75,
       	height: 75,
       });
+
+      prepare_print_all();
 
       //-- INITAILIZE
       $(document).ready(function() {
@@ -437,6 +463,19 @@
       });
 
       //-- MAIN FUNCTION
+      function prepare_print_all(){
+        var order_no = $('#order_no').val();
+        var serial_code_count = $('#serial_code_count').val();
+        for(var i = 0;i < serial_code_count;i++){
+          var serial_code = $('#qrcode_serial_code_' + i).text();
+          new QRCode(document.getElementById("qrcode_" + i), {
+          	text: (order_no + "-" + serial_code),
+          	width: 75,
+          	height: 75,
+          });
+        }
+      }
+
       function prepare_qrcode(code){
         var order_no = $('#order_no').val();
         $('#qrcode_serial_code').text(code);
@@ -444,9 +483,10 @@
         qrcode.makeCode(order_no + "-" + code);
       }
 
-      function print_qrcode(){
+      function print_qrcode(section){
        $("#qrcode_modal .close").click();
-       html2canvas(document.querySelector("#qrcode_section")).then(canvas => {
+       $("#print_all_modal .close").click();
+       html2canvas(document.querySelector(section)).then(canvas => {
          var printWindow = window.open('', '', 'height=600,width=800');
          printWindow.document.write('<html><head><title>Print QR Code</title>');
          printWindow.document.write('</head><body>');
