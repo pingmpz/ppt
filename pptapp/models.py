@@ -21,6 +21,7 @@ class Serial(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=20, default="-")
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    po_no = models.CharField(max_length=20, default="-")
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(auto_now_add=True)
 

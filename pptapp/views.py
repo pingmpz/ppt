@@ -13,6 +13,7 @@ def track_serial(request):
     alert = 'NOTFOUND'
     order_no = request.GET.get('order_no')
     serial_code = request.GET.get('serial_code')
+    print(order_no, serial_code)
     drawing_no = '-'
     fg_code = '-'
     creator = '-'
@@ -31,7 +32,7 @@ def track_serial(request):
         serial_is_exist = Serial.objects.filter(code=serial_code,order=order).exists()
         if(serial_is_exist == True):
             alert = 'FOUND'
-            serial = Serial.objects.get(code=serial_code)
+            serial = Serial.objects.get(code=serial_code,order=order)
             #-- GET ALL PATH
             paths = Path.objects.filter(serial=serial).order_by('date_published')
             path_length = len(paths)

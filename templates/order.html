@@ -378,7 +378,7 @@
             </div>
             <div class="modal-body" id="qrcode_section">
               <div>
-                <div id="qrcode" style="padding-top:5px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
+                <div id="qrcode" style="padding-top:3px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
                 <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
               </div>
             </div>
@@ -404,7 +404,7 @@
                 <div id="qrcode_{{forloop.counter0}}" style="padding-top:5px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
                 <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code_{{forloop.counter0}}">{{serial_code.code}}</span><br>&nbsp;</div>
               </div>
-              <div style="margin-bottom:32px"></div>
+              <div style="margin-bottom:{% if forloop.counter0|divisibleby:2 %}33px{% else %}32px{% endif %}"></div>
               {% endfor %}
             </div>
             <div class="modal-footer">
