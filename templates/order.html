@@ -62,7 +62,7 @@
                       </div>
                       <div class="card-body">
                         <div class="form-group row">
-                          <label class="col-md-4 col-form-label text-right">Production Order No</label>
+                          <label class="col-md-4 col-form-label text-right">Prod. Order No</label>
                           <div class="col-md-8">
                             <input class="form-control" type="text" maxlength="10" id="order_no" value="{{order.no}}" disabled>
                           </div>
@@ -93,6 +93,7 @@
                   <div class="col-sm-12 col-md-8">
                     <!-- Button Group -->
                     <div class="col-md-12 text-right">
+                      <button type="button" class="btn btn-lg btn-info small" style="width: 80px" data-toggle="modal" data-target="#add_po_no_modal"><i class="c-icon c-icon-xl cil-playlist-add"></i><br>PO No</button>
                       <button type="button" class="btn btn-lg btn-dark small" style="width: 80px" data-toggle="modal" data-target="#print_all_modal"><i class="c-icon c-icon-xl cil-qr-code"></i><br>Print All</button>
                       <button type="button" class="btn btn-lg btn-success small" style="width: 80px" data-toggle="modal" data-target="#create_serial_code_modal"><i class="c-icon c-icon-xl cil-plus"></i><br>Create</button>
                       <button type="button" class="btn btn-lg btn-primary small" style="width: 80px" data-toggle="modal" data-target="#multiple_receive_modal"><i class="c-icon c-icon-xl cil-chevron-double-right"></i><br>Multiple</button>
@@ -105,24 +106,25 @@
                       </div>
                       <div class="card-body">
                         <input type="text" id="serial_code_count" value="{{serial_codes|length}}" hidden>
-                        <table class="table table-sm text-center" id="serial_code_table">
+                        <table class="table table-sm text-center small" id="serial_code_table" style="table-layout: fixed;">
                           <thead>
                             <tr class="bg-dark">
                               <th>Item</th>
-                              <th>Serial Code</th>
+                              <th colspan="2">Serial Code</th>
                               <th></th>
                               <th>Status</th>
                               <th>Employee</th>
                               <th>Location</th>
-                              <th>Timestamp</th>
-                              <th></th>
+                              <th colspan="2">Timestamp</th>
+                              <th>PO No</th>
+                              <th colspan="3"></th>
                             </tr>
                           </thead>
                           <tbody>
                             {% for serial_code in serial_codes %}
                             <tr>
                               <td>{{forloop.counter}}</td>
-                              <td>{{serial_code.code}}</td>
+                              <td colspan="2">{{serial_code.code}}</td>
                               <td><button type="button" class="btn btn-sm btn-link small" style="padding-top:0px; padding-bottom:0px;" data-toggle="modal" data-target="#qrcode_modal" onclick="prepare_qrcode('{{serial_code.code}}')"><i class="c-icon cil-qr-code"></i></button></td>
                               <td>
                                 {% if last_status|index:forloop.counter0 == 'CREATED' %}<span class="text-success">Created</span>
@@ -132,8 +134,9 @@
                               </td>
                               <td>{{last_receivers|index:forloop.counter0}}</td>
                               <td>{{last_locations|index:forloop.counter0}}</td>
-                              <td>{{last_timestamps|index:forloop.counter0}}</td>
-                              <td class="text-left">
+                              <td colspan="2">{{last_timestamps|index:forloop.counter0}}</td>
+                              <td>{% if serial_code.po_no != "-" %}<a href="http://129.1.100.185:8080/po_page/{{serial_code.po_no}}">{{serial_code.po_no}}</a>{% else %}-{% endif %}</td>
+                              <td colspan="3">
                                 <button type="button" class="btn btn-sm btn-pill btn-info small" data-toggle="modal" data-target="#path_{{serial_code.id}}_modal">Path</button>
                                 {% if last_status|index:forloop.counter0 != 'REJECTED' %}
                                 <button type="button" class="btn btn-sm btn-pill btn-primary small" data-toggle="modal" data-target="#receive_modal" onclick="prepare_receive('{{serial_code.id}}','{{serial_code.code}}')">Receive</button>
@@ -203,6 +206,41 @@
         </div>
       </div>
       {% endfor %}
+      <!-- Add PO No Modal -->
+      <div class="modal fade" id="add_po_no_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-primary" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Add PO No to Serial Code</h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Serial Code(s)</label>
+                <div class="col-md-8">
+                  <select class="c-multi-select text-left" id="multiple_receive_serial_code_list" multiple>
+                    {% for serial_code in serial_codes %}
+                    {% if last_status|index:forloop.counter0 != 'REJECTED' %}
+                    <option value="{{serial_code.id}}">{{serial_code.code}}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">PO No</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="po_no" value="">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" type="button" onclick="add_po_no()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Create Serial Code Modal -->
       <div class="modal fade" id="create_serial_code_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-success" role="document">
@@ -495,6 +533,31 @@
          printWindow.document.close();
          printWindow.print();
        });
+      }
+
+      function add_po_no(){
+        var order_no = $('#order_no').val();
+        var serial_code_list = $('#multiple_receive_serial_code_list').val();
+        var po_no = $('#po_no').val();
+        if(serial_code_list.length == 0){
+          return;
+        } else if(po_no == ""){
+          invalid('po_no');
+          return;
+        } else {
+          valid('po_no');
+          $.ajax({
+            url: '/add_po_no/',
+            data: {
+              'serial_code_list' : serial_code_list,
+              'po_no' : po_no,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
+            }
+          });
+        }
       }
 
       function multiple_receive(){

@@ -227,6 +227,19 @@ def multiple_receive(request):
     }
     return JsonResponse(data)
 
+def add_po_no(request):
+    # COLLECT DATA
+    serial_code_list = request.GET.getlist('serial_code_list[]')
+    po_no = request.GET.get('po_no')
+    # SAVE DATA
+    for i in range(len(serial_code_list)):
+        serial = Serial.objects.get(id=serial_code_list[i])
+        serial.po_no = po_no
+        serial.save()
+    data = {
+    }
+    return JsonResponse(data)
+
 def serial_receive(request):
     # COLLECT DATA
     serial_code_id = request.GET.get('serial_code_id')
