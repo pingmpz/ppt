@@ -33,3 +33,23 @@ class Path(models.Model):
     status = models.CharField(max_length=20, default="-")
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(auto_now_add=True)
+
+class MoveHistory(models.Model):
+    id = models.AutoField(primary_key=True)
+    serial_code = models.CharField(max_length=20, default="-")
+    old_order_no = models.CharField(max_length=20, default="-")
+    new_order_no = models.CharField(max_length=20, default="-")
+    emp_id = models.CharField(max_length=20, default="-")
+    reason = models.TextField(max_length=500, default="-")
+    date_modified = models.DateTimeField(auto_now=True)
+    date_published = models.DateTimeField(auto_now_add=True)
+
+class DeleteHistory(models.Model):
+    id = models.AutoField(primary_key=True)
+    serial_code = models.CharField(max_length=20, default="-")
+    order_no = models.CharField(max_length=20, default="-")
+    emp_id = models.CharField(max_length=20, default="-")
+    reason = models.TextField(max_length=500, default="-")
+    path_history = models.TextField(max_length=1000, default="-")
+    date_modified = models.DateTimeField(auto_now=True)
+    date_published = models.DateTimeField(auto_now_add=True)

@@ -25,6 +25,8 @@ urlpatterns = [
     path('serial_receive/', views.serial_receive, name='serial_receive'),
     path('serial_reject/', views.serial_reject, name='serial_reject'),
     path('serial_edit/', views.serial_edit, name='serial_edit'),
+    path('serial_move/', views.serial_move, name='serial_move'),
+    path('serial_delete/', views.serial_delete, name='serial_delete'),
 
     path('import_data/', views.import_data, name='import_data'),
 ]

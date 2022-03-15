@@ -145,6 +145,8 @@
                                 {% if last_status|index:forloop.counter0 == 'CREATED' %}
                                 <button type="button" class="btn btn-sm btn-pill btn-warning small" data-toggle="modal" data-target="#edit_modal" onclick="prepare_edit('{{serial_code.id}}','{{serial_code.code}}')">Edit</button>
                                 {% endif %}
+                                <button type="button" class="btn btn-sm btn-pill text-white small" style="background-color:#0acf97;" data-toggle="modal" data-target="#move_modal" onclick="prepare_move('{{serial_code.id}}','{{serial_code.code}}')">Move</button>
+                                <button type="button" class="btn btn-sm btn-pill btn-dark small" data-toggle="modal" data-target="#delete_modal" onclick="prepare_delete('{{serial_code.id}}','{{serial_code.code}}')">Delete</button>
                               </td>
                             </tr>
                             {% endfor %}
@@ -218,7 +220,7 @@
               <div class="form-group row">
                 <label class="col-md-4 col-form-label text-right">Serial Code(s)</label>
                 <div class="col-md-8">
-                  <select class="c-multi-select text-left" id="multiple_receive_serial_code_list" multiple>
+                  <select class="c-multi-select text-left" id="multiple_po_serial_code_list" multiple>
                     {% for serial_code in serial_codes %}
                     {% if last_status|index:forloop.counter0 != 'REJECTED' %}
                     <option value="{{serial_code.id}}">{{serial_code.code}}</option>
@@ -406,6 +408,74 @@
           </div>
         </div>
       </div>
+      <!-- Move Modal -->
+      <div class="modal fade" id="move_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="background-color:#0acf97;">
+              <h4 class="modal-title text-white">Move : <span id="move_serial_code"></span></h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <input class="form-control" type="text" maxlength="10" id="move_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">New Prod. Order</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="move_order_no">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="move_emp_id">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Move Reason</label>
+                <div class="col-md-8">
+                  <textarea class="form-control" name="name" rows="4" id="move_reason"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn text-white" style="background-color:#0acf97;" type="button" onclick="move()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Delete Modal -->
+      <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dark" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete : <span id="delete_serial_code"></span></h4>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body text-center">
+              <input class="form-control" type="text" maxlength="10" id="delete_serial_code_id" hidden>
+              <br>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Employee ID</label>
+                <div class="col-md-8">
+                  <input class="form-control" type="text" id="delete_emp_id" value="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">Delete Reason</label>
+                <div class="col-md-8">
+                  <textarea class="form-control" name="name" rows="4" id="delete_reason"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-dark" type="button" onclick="trash()">Confirm</button>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- QR Code Modal -->
       <div class="modal fade" id="qrcode_modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dark" role="document" style="width: 310px;">
@@ -478,6 +548,13 @@
           document.body.classList.remove('c-no-layout-transition')
         }, 2000);
       });
+      var multiple_po_serial_code_list = document.getElementById('multiple_po_serial_code_list');
+      var multiple_po_serial_code_select = new coreui.MultiSelect(multiple_po_serial_code_list, {
+        multiple: true,
+        selectionType: 'tags',
+        search: true,
+      });
+
       var multiple_receive_serial_code_list = document.getElementById('multiple_receive_serial_code_list');
       var multiple_receive_serial_code_select = new coreui.MultiSelect(multiple_receive_serial_code_list, {
         multiple: true,
@@ -537,7 +614,7 @@
 
       function add_po_no(){
         var order_no = $('#order_no').val();
-        var serial_code_list = $('#multiple_receive_serial_code_list').val();
+        var serial_code_list = $('#multiple_po_serial_code_list').val();
         var po_no = $('#po_no').val();
         if(serial_code_list.length == 0){
           return;
@@ -735,6 +812,94 @@
                   window.location.replace("/order/" + order_no);
                 }
               });
+            }
+          });
+        }
+      }
+
+      function prepare_move(id, code){
+        $('#move_serial_code').text(code);
+        $('#move_serial_code_id').val(id);
+      }
+
+      function move(){
+        var order_no = $('#order_no').val();
+        var serial_code_id = $('#move_serial_code_id').val();
+        var new_order_no = $('#move_order_no').val();
+        var emp_id = $('#move_emp_id').val();
+        var reason = $('#move_reason').val();
+        $.ajax({
+          url: '/validate_order_no/',
+          data: {
+            'order_no': new_order_no
+          },
+          dataType: 'json',
+          success: function (data) {
+            if (data.is_exist == false || new_order_no == order_no) {
+              invalid('move_order_no');
+              return;
+            } else {
+              valid('move_order_no');
+              if(emp_id == ""){
+                invalid('move_emp_id');
+                return;
+              } else if (reason == ""){
+                valid('move_emp_id');
+                invalid('move_reason');
+                return;
+              } else {
+                valid('move_order_no');
+                valid('move_emp_id');
+                valid('move_reason');
+                $.ajax({
+                  url: '/serial_move/',
+                  data: {
+                    'serial_code_id' : serial_code_id,
+                    'order_no': new_order_no,
+                    'emp_id' : emp_id,
+                    'reason' : reason,
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                    window.location.replace("/order/" + order_no);
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+
+      function prepare_delete(id, code){
+        $('#delete_serial_code').text(code);
+        $('#delete_serial_code_id').val(id);
+      }
+
+      function trash(){
+        var order_no = $('#order_no').val();
+        var serial_code_id = $('#delete_serial_code_id').val();
+        var emp_id = $('#delete_emp_id').val();
+        var reason = $('#delete_reason').val();
+        if(emp_id == ""){
+          invalid('delete_emp_id');
+          return;
+        } else if (reason == ""){
+          valid('delete_emp_id');
+          invalid('delete_reason');
+          return;
+        } else {
+          valid('delete_emp_id');
+          valid('delete_reason');
+          $.ajax({
+            url: '/serial_delete/',
+            data: {
+              'serial_code_id' : serial_code_id,
+              'emp_id' : emp_id,
+              'reason' : reason,
+            },
+            dataType: 'json',
+            success: function (data) {
+              window.location.replace("/order/" + order_no);
             }
           });
         }

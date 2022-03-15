@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Employee, Order, Serial, Path
+from .models import Employee, Order, Serial, Path, MoveHistory, DeleteHistory
 from django.http import JsonResponse
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Alignment, PatternFill
@@ -159,6 +159,7 @@ def fg_master(request):
     return render(request, 'fg_master.html', context)
 
 def order(request, order_no):
+    orders = Order.objects.all().order_by('-date_published')
     order = Order.objects.get(no=order_no)
     serial_codes = Serial.objects.filter(order=order)
     path_list = []
@@ -188,6 +189,7 @@ def order(request, order_no):
         'last_receivers' : last_receivers,
         'last_locations' : last_locations,
         'last_timestamps' : last_timestamps,
+        'orders' : orders,
     }
     return render(request, 'order.html', context)
 
@@ -279,6 +281,43 @@ def serial_edit(request):
     # SAVE DATA
     serial.code = new_serial_code
     serial.save()
+    data = {
+    }
+    return JsonResponse(data)
+
+def serial_move(request):
+    # COLLECT DATA
+    serial_code_id = request.GET.get('serial_code_id')
+    order_no = request.GET.get('order_no')
+    emp_id = request.GET.get('emp_id')
+    reason = request.GET.get('reason')
+    # PREPARE DATA
+    serial = Serial.objects.get(id=serial_code_id)
+    order = Order.objects.get(no=order_no)
+    move_h_new = MoveHistory(serial_code=serial.code,old_order_no=serial.order.no,new_order_no=order_no,emp_id=emp_id,reason=reason)
+    move_h_new.save()
+    # SAVE DATA
+    serial.order = order
+    serial.save()
+    data = {
+    }
+    return JsonResponse(data)
+
+def serial_delete(request):
+    # COLLECT DATA
+    serial_code_id = request.GET.get('serial_code_id')
+    emp_id = request.GET.get('emp_id')
+    reason = request.GET.get('reason')
+    # PREPARE DATA
+    serial = Serial.objects.get(id=serial_code_id)
+    paths = Path.objects.filter(serial=serial).order_by('date_published')
+    path_history = ''
+    for path in paths:
+        path_history = path_history + '- ' + str(path.date_published) + ' @ ' + path.location + ' BY ' + path.emp_id + ' (' + path.status + ')\n'
+    del_h_new = DeleteHistory(serial_code=serial.code,order_no=serial.order.no,emp_id=emp_id,reason=reason,path_history=path_history)
+    del_h_new.save()
+    # SAVE DATA
+    serial.delete()
     data = {
     }
     return JsonResponse(data)
