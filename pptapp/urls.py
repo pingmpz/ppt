@@ -18,6 +18,9 @@ urlpatterns = [
     path('emp_master/', views.emp_master, name='emp_master'),
     path('fg_master/', views.fg_master, name='fg_master'),
 
+    path('move_history/', views.move_history, name='move_history'),
+    path('del_history/', views.del_history, name='del_history'),
+
     path('order/<str:order_no>', views.order, name='order'),
     path('create_serial/', views.create_serial, name='create_serial'),
     path('multiple_receive/', views.multiple_receive, name='multiple_receive'),

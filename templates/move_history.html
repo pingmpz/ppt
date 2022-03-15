@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load static %}
+{% load extra %}
+<!--
+* CoreUI Pro based Bootstrap Admin Template
+* @version v3.2.0
+* @link https://coreui.io/pro/
+* Copyright (c) 2020 creativeLabs Łukasz Holeczek
+* License (https://coreui.io/pro/license)
+-->
+<html lang="en">
+  <head>
+    <base href="./">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
+    <meta name="author" content="Łukasz Holeczek">
+    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <title>Move History | Production Part Traker</title>
+    <!-- Main styles for this application-->
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <!-- Icon CCS -->
+    <link href="{% static "vendors/@coreui/icons/css/free.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendors/@coreui/icons/css/brand.min.css" %}" rel="stylesheet">
+    <!-- Datatable CCS -->
+    <link rel="stylesheet" href="{% static "vendors/datatables.net-bs4/css/dataTables.bootstrap4.css" %}">
+  </head>
+  <body class="c-app c-no-layout-transition">
+    <!-- *** LEFT SIDE BAR *** -->
+    {% include 'sidebar.html' %}
+    <!-- *** RIGHT SIDE BAR *** -->
+
+    <div class="c-wrapper">
+      <!-- *** HEADER *** -->
+      <header class="c-header c-header-light c-header-fixed">
+        {% include 'header.html' %}
+        <div class="c-subheader justify-content-between px-3">
+          <!-- Breadcrumb-->
+          <ol class="breadcrumb border-0 m-0 px-0 px-md-3">
+            Move History
+          </ol>
+          <div class="c-subheader-nav d-md-down-none mfe-2">
+
+          </div>
+        </div>
+      </header>
+      <!-- *** BODY *** -->
+      <div class="c-body">
+        <main class="c-main">
+          <div class="container-fluid">
+            <div class="fade-in">
+              <!-- Main Body -->
+              <div class="row">
+                  <!-- Left Content -->
+                  <div class="col-sm-12 col-md-12">
+                    <div class="card border-secondary">
+                      <div class="card-body">
+                        <table class="table table-sm table-striped datatable text-center" id="move_table">
+                          <thead>
+                            <tr>
+                              <th>Move At</th>
+                              <th>Serial Code</th>
+                              <th>Old Order No</th>
+                              <th>New Order No</th>
+                              <th>Emp ID</th>
+                              <th>Reason</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for move in moves %}
+                            <tr>
+                              <td>{{move.date_published}}</td>
+                              <td>{{move.serial_code}}</td>
+                              <td>{{move.old_order_no}}</td>
+                              <td>{{move.new_order_no}}</td>
+                              <td>{{move.emp_id}}</td>
+                              <td>{{move.reason}}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <!-- *** FOOTER *** -->
+      {% include 'footer.html' %}
+      <!-- *** MODAL *** -->
+    </div>
+    <!-- CoreUI and necessary plugins-->
+    <script src="{% static "vendors/@coreui/coreui-pro/js/coreui.bundle.min.js" %}"></script>
+    <!--[if IE]><!-->
+    <script src="{% static "vendors/@coreui/icons/js/svgxuse.min.js" %}"></script>
+    <!--<![endif]-->
+    <!-- Jqeury JS -->
+    <script src="{% static "vendors/jquery/js/jquery.min.js" %}"></script>
+    <!-- Datatable JS -->
+    <script src="{% static "vendors/datatables.net/js/jquery.dataTables.js" %}"></script>
+    <script src="{% static "vendors/datatables.net-bs4/js/dataTables.bootstrap4.min.js" %}"></script>
+    <!-- Custom JS -->
+    <script src="{% static "customize/js/clock.js" %}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        setTimeout(function() {
+          document.body.classList.remove('c-no-layout-transition')
+        }, 2000);
+      });
+
+      //-- INITAILIZE
+      $(document).ready(function() {
+        showTime();
+        $('#move_table').DataTable( {
+            "order": [[ 0, "desc" ]],
+            'iDisplayLength': 100,
+        });
+      });
+
+    </script>
+  </body>
+</html>

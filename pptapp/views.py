@@ -158,6 +158,20 @@ def fg_master(request):
     }
     return render(request, 'fg_master.html', context)
 
+def del_history(request):
+    dels = DeleteHistory.objects.all()
+    context = {
+        'dels' : dels,
+    }
+    return render(request, 'del_history.html', context)
+
+def move_history(request):
+    moves = MoveHistory.objects.all()
+    context = {
+        'moves' : moves,
+    }
+    return render(request, 'move_history.html', context)
+
 def order(request, order_no):
     orders = Order.objects.all().order_by('-date_published')
     order = Order.objects.get(no=order_no)
