@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Alignment, PatternFill
 
+VEN_CODE = '1050591'
+
 def index(request):
     context = {
     }
@@ -88,6 +90,7 @@ def exc_change_location(request):
 
 def new_workorder(request):
     context = {
+        'ven_code': VEN_CODE,
     }
     return render(request, 'new_workorder.html', context)
 

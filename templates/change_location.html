@@ -192,26 +192,30 @@
       });
 
       $("#qr_code").on("change keypress keyup blur", function() {
-        if($("#qr_code").val().length == 29 && $('#auto_exc').is(':checked')){
-          excute();
+        if($("#qr_code").val().length >= 19 && $('#auto_exc').is(':checked')){
+          var delayInMilliseconds = 1000;
+          setTimeout(function() {
+            excute();
+          }, delayInMilliseconds);
         }
       });
 
       function excute(){
-        if(isExcuting == false){
+        var qr_code = $("#qr_code").val();
+        if(isExcuting == false && qr_code.length > 11){
           isExcuting = true;
           var emp_id = $("#emp_id").val();
           var location = $("#location").val();
-          var qr_code = $("#qr_code").val();
           var order_no = qr_code.substring(0,10);
-          var serial_code = qr_code.substring(11,29);
+          var serial_code = qr_code.substring(11).trim();
+          console.log(serial_code)
           $("#alert_empty").prop('hidden', true);
           $("#alert_text").prop('hidden', true);
           $("#alert_success").prop('hidden', true);
           $("#alert_notfound").prop('hidden', true);
           $("#alert_rejected").prop('hidden', true);
           $("#loading_spinner").prop('hidden', false);
-          $("#qr_code").prop('disabled', true);
+          // $("#qr_code").prop('disabled', true);
           $.ajax({
             url: '/exc_change_location/',
             data: {
@@ -227,6 +231,7 @@
                 $("#alert_text_order_no").text(order_no);
                 $("#alert_text_serial_code").text(serial_code);
                 $("#alert_text").prop('hidden', false);
+                $("#qr_code").val('');
               } else if (data.alert == 'NOTFOUND') {
                 $("#alert_notfound").prop('hidden', false);
               } else if (data.alert == 'REJECTED') {
@@ -236,7 +241,7 @@
                 $("#alert_text").prop('hidden', false);
               }
               $("#loading_spinner").prop('hidden', true);
-              $("#qr_code").val('');
+              // $("#qr_code").val('');
               $("#qr_code").prop('disabled', false);
               $("#qr_code").focus();
               isExcuting = false;

@@ -164,24 +164,27 @@
       });
 
       $("#qr_code").on("change keypress keyup blur", function() {
-        if($("#qr_code").val().length == 29 && $('#auto_exc').is(':checked')){
-          excute();
+        if($("#qr_code").val().length >= 19 && $('#auto_exc').is(':checked')){
+          var delayInMilliseconds = 1000;
+          setTimeout(function() {
+            excute();
+          }, delayInMilliseconds);
         }
       });
 
       function excute(){
-        if(isExcuting == false){
+        var qr_code = $("#qr_code").val();
+        if(isExcuting == false && qr_code.length > 11){
           isExcuting = true;
-          var qr_code = $("#qr_code").val();
           var order_no = qr_code.substring(0,10);
-          var serial_code = qr_code.substring(11,29);
+          var serial_code = qr_code.substring(11);
           $('#serial_code').val("");
           $('#order_no').val("");
           $('#drawing_no').val("");
           $('#fg_code').val("");
           $('#emp_id').val("");
           $("#path_table_body tr").remove();
-          $("#qr_code").prop('disabled', true);
+          // $("#qr_code").prop('disabled', true);
           $.ajax({
             url: '/track_serial/',
             data: {

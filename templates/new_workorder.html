@@ -126,6 +126,34 @@
                       </div>
                       <div class="card-body">
                         <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-right">
+                            Type
+                            <button class="btn btn-sm text-sm btn-secondary btn-pill m-0 py-0 px-2" type="button" data-toggle="tooltip" data-placement="bottom" 
+                              data-html="true" title=""
+                             data-original-title="XXXXXX = Supplier Code<br>YY = Year<br>MM = Month<br>DD = Day<br>WW = Week No<br># = Running No<br>">
+                             <b>?</b>
+                            </button>
+                          </label>
+                          <div class="col-md-9 col-form-label">
+                            <div class="form-check mr-1">
+                              <input class="form-check-input" id="type_1" type="radio" value="1" name="type" checked>
+                              <label class="form-check-label" for="type_1">1 (XXXXXX-YY-WW-####)</label>
+                            </div>
+                            <div class="form-check mr-1">
+                              <input class="form-check-input" id="type_2" type="radio" value="2" name="type">
+                              <label class="form-check-label" for="type_2">2 (WWYY-###)</label>
+                            </div>
+                            <div class="form-check mr-1">
+                              <input class="form-check-input" id="type_3" type="radio" value="3" name="type">
+                              <label class="form-check-label" for="type_3">3 (YYMMDD##)</label>
+                            </div>
+                            <div class="form-check mr-1">
+                              <input class="form-check-input" id="type_4" type="radio" value="4" name="type">
+                              <label class="form-check-label" for="type_4">4 (XXXXXX-WWYY-###)</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group row">
                           <label class="col-md-3 col-form-label text-right">Serial Code</label>
                           <div class="col-md-9">
                             <input class="form-control" type="text" maxlength="18" id="serial_code_add">
@@ -194,6 +222,8 @@
     <script src="{% static "vendors/select2/js/select2.min.js" %}"></script>
     <!-- Datamask JS -->
     <script src="{% static "vendors/jquery.maskedinput/js/jquery.maskedinput.js" %}"></script>
+    <!-- Tooltip JS -->
+    <script src="{% static "js/tooltips.js" %}"></script>
     <!-- Custom JS -->
     <script src="{% static "customize/js/clock.js" %}"></script>
     <script>
@@ -225,7 +255,11 @@
         $("#serial_code_add").removeClass("is-invalid");
         var serial_code_add = $("#serial_code_add").val();
         var serial_code_count = $('#serial_code_count').val();
-        if(serial_code_add.length != 18) return;
+        var type = $('input[type=radio][name=type]:checked').val();
+        if(serial_code_add.length != 18 && type == 1) return;
+        if(serial_code_add.length != 8 && type == 2) return;
+        if(serial_code_add.length != 8 && type == 3) return;
+        if(serial_code_add.length != 16 && type == 4) return;
         for(var i = 0;i < serial_code_count;i++){
           var serial_code = $('#serial_code_' + i).val();
           if(serial_code_add == serial_code){
@@ -234,19 +268,7 @@
           }
         }
         buildRow(serial_code_add);
-        //-- Auto Increment Logic
-        if ($('#auto_inc').is(':checked')) {
-          var serial_code_list = serial_code_add.split('-');
-          var running_no = parseInt(serial_code_list[3]);
-          if(running_no != 9999){
-            running_no += 1;
-            for(var i = running_no.toString().length;i < 4;i++){
-              running_no = "0" + running_no;
-            }
-            var new_serial_code = serial_code_list[0] + "-" + serial_code_list[1] + "-" + serial_code_list[2] + "-" + running_no;
-            $("#serial_code_add").val(new_serial_code);
-          }
-        }
+        ai();
       }
 
       function buildRow(serial_code){
@@ -288,6 +310,68 @@
           }
         });
       }
+
+      function ai(){
+        var serial_code_add = $("#serial_code_add").val();
+        var serial_code_count = $('#serial_code_count').val();
+        var type = $('input[type=radio][name=type]:checked').val();
+        //-- Auto Increment Logic
+        if ($('#auto_inc').is(':checked')) {
+          if(type == 1){
+            var serial_code_list = serial_code_add.split('-');
+            var running_no = parseInt(serial_code_list[3]);
+            if(running_no != 9999){
+              running_no += 1;
+              for(var i = running_no.toString().length;i < 4;i++){
+                running_no = "0" + running_no;
+              }
+              var new_serial_code = serial_code_list[0] + "-" + serial_code_list[1] + "-" + serial_code_list[2] + "-" + running_no;
+              $("#serial_code_add").val(new_serial_code);
+            }
+          } else if(type == 2){
+            var running_no = parseInt(serial_code_add[5] + serial_code_add[6] + serial_code_add[7]);
+            if(running_no != 999){
+              running_no += 1;
+              for(var i = running_no.toString().length;i < 3;i++){
+                running_no = "0" + running_no;
+              }
+              
+              var new_serial_code = serial_code_add.substring(0, 5) + running_no;
+              $("#serial_code_add").val(new_serial_code);
+            }  
+          } else if(type == 3){
+            var running_no = parseInt(serial_code_add[6] + serial_code_add[7]);
+            if(running_no != 99){
+              running_no += 1;
+              for(var i = running_no.toString().length;i < 2;i++){
+                running_no = "0" + running_no;
+              }
+              
+              var new_serial_code = serial_code_add.substring(0, 6) + running_no;
+              $("#serial_code_add").val(new_serial_code);
+            } 
+          } else if(type == 4){
+            var serial_code_list = serial_code_add.split('-');
+            var running_no = parseInt(serial_code_list[2]);
+            if(running_no != 999){
+              running_no += 1;
+              for(var i = running_no.toString().length;i < 3;i++){
+                running_no = "0" + running_no;
+              }
+              var new_serial_code = serial_code_list[0] + "-" + serial_code_list[1] + "-" + running_no;
+              $("#serial_code_add").val(new_serial_code);
+            }
+          }  
+        }
+      }
+
+      $('input[type=radio][name=type]').change(function() {
+        $('#serial_code_add').val('');
+        if($(this).val() == 1) $('#serial_code_add').mask('9999999-99-99-9999');
+        if($(this).val() == 2) $('#serial_code_add').mask('9999-999');
+        if($(this).val() == 3) $('#serial_code_add').mask('99999999');
+        if($(this).val() == 4) $('#serial_code_add').mask('9999999-9999-999');
+      });
 
       //-- VALIDATE
       function validate_order_no(_callback){

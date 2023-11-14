@@ -124,7 +124,9 @@
                             {% for serial_code in serial_codes %}
                             <tr>
                               <td>{{forloop.counter}}</td>
-                              <td colspan="2">{{serial_code.code}}</td>
+                              <td colspan="2">
+                                {{serial_code.code}}
+                              </td>
                               <td><button type="button" class="btn btn-sm btn-link small" style="padding-top:0px; padding-bottom:0px;" data-toggle="modal" data-target="#qrcode_modal" onclick="prepare_qrcode('{{serial_code.code}}')"><i class="c-icon cil-qr-code"></i></button></td>
                               <td>
                                 {% if last_status|index:forloop.counter0 == 'CREATED' %}<span class="text-success">Created</span>
@@ -251,25 +253,53 @@
               <h4 class="modal-title">Create</span></h4>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
-            <div class="modal-body text-center">
+            <div class="modal-body">
               <input class="form-control" type="text" maxlength="10" id="create_serial_code_id" hidden>
               <br>
               <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right">
+                  Type
+                  <button class="btn btn-sm text-sm btn-secondary btn-pill m-0 py-0 px-2" type="button" data-toggle="tooltip" data-placement="bottom" 
+                    data-html="true" title=""
+                   data-original-title="XXXXXX = Supplier Code<br>YY = Year<br>MM = Month<br>DD = Day<br>WW = Week No<br># = Running No<br>">
+                   <b>?</b>
+                  </button>
+                </label>
+                <div class="col-md-8 col-form-label">
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" id="create_type_1" type="radio" value="1" name="create_type" checked>
+                    <label class="form-check-label" for="create_type_1">1 (XXXXXX-YY-WW-####)</label>
+                  </div>
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" id="create_type_2" type="radio" value="2" name="create_type">
+                    <label class="form-check-label" for="create_type_2">2 (WWYY-###)</label>
+                  </div>
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" id="create_type_3" type="radio" value="3" name="create_type">
+                    <label class="form-check-label" for="create_type_3">3 (YYMMDD##)</label>
+                  </div>
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" id="create_type_4" type="radio" value="4" name="create_type">
+                    <label class="form-check-label" for="create_type_4">4 (XXXXXX-WWYY-###)</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
                 <label class="col-md-4 col-form-label text-right">Serial Code</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" id="create_serial_code" value="">
+                  <input class="form-control" type="text" id="create_serial_code">
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-md-4 col-form-label text-right">Employee ID</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" id="create_emp_id" value="">
+                  <input class="form-control" type="text" id="create_emp_id">
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-md-4 col-form-label text-right">Location</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" id="create_location" value="">
+                  <input class="form-control" type="text" id="create_location">
                 </div>
               </div>
             </div>
@@ -393,6 +423,7 @@
             </div>
             <div class="modal-body text-center">
               <input class="form-control" type="text" maxlength="10" id="edit_serial_code_id" hidden>
+              <input class="form-control" type="text" id="edit_serial_code_len" hidden>
               <br>
               <div class="form-group row">
                 <label class="col-md-4 col-form-label text-right">New Serial Code</label>
@@ -485,10 +516,14 @@
               <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body" id="qrcode_section">
-              <div>
+              <div class="row">
+                <div class="col-3" id="qrcode" style="padding-top:3px; padding-left:15px; width:75px; height:75px; display: inline-block;"></div>
+                <div class="col-9" style="padding-left:18px; display: inline-block; justify-content: center; color:#000; font-weight: 1000; padding-top: 8px;">{{order.fg_code}}<br>{{order.no}}<br><span id="qrcode_serial_code"></span></div>
+              </div>
+              <!-- <div>
                 <div id="qrcode" style="padding-top:3px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
                 <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code"></span><br>&nbsp;</div>
-              </div>
+              </div> -->
             </div>
             <div class="modal-footer">
               <button class="btn btn-dark" type="button" onclick="print_qrcode('#qrcode_section')">Print</button>
@@ -508,11 +543,16 @@
             <div class="modal-body" id="print_all_section">
               <div style="margin-bottom:102px"></div>
               {% for serial_code in serial_codes %}
-              <div>
+              <div class="row">
+                <div class="col-3" id="qrcode_{{forloop.counter0}}" style="padding-top:5px; padding-left:15px; width:75px; height:75px; display: inline-block;"></div>
+                <div class="col-9" style="padding-left:18px; height:75px; display: inline-block; justify-content: center; color:#000; font-weight: 1000; padding-top: 8px;">{{order.fg_code}}<br>{{order.no}}<br><span id="qrcode_serial_code_{{forloop.counter0}}">{{serial_code.code}}</span></div>
+              </div>
+              <div style="margin-bottom:{% if forloop.counter0|divisibleby:2 %}33px{% else %}32px{% endif %}"></div>
+              <!-- <div>
                 <div id="qrcode_{{forloop.counter0}}" style="padding-top:5px; padding-left:10px; width:75px; height:75px; display: inline-block;"></div>
                 <div style="padding-left:15px; display: inline-block; justify-content: center; color:#000; font-weight: 1000;">{{order.no}}<br><span id="qrcode_serial_code_{{forloop.counter0}}">{{serial_code.code}}</span><br>&nbsp;</div>
               </div>
-              <div style="margin-bottom:{% if forloop.counter0|divisibleby:2 %}33px{% else %}32px{% endif %}"></div>
+              <div style="margin-bottom:{% if forloop.counter0|divisibleby:2 %}33px{% else %}32px{% endif %}"></div> -->
               {% endfor %}
             </div>
             <div class="modal-footer">
@@ -674,9 +714,18 @@
         var serial_code = $('#create_serial_code').val();
         var emp_id = $('#create_emp_id').val();
         var location = $('#create_location').val();
-        if(serial_code.length != 18){
-          invalid('create_serial_code');
-          return;
+        var type = $('input[type=radio][name=create_type]:checked').val();
+        if(serial_code.length != 18 && type == 1){
+           invalid('create_serial_code'); return;
+        }
+        if(serial_code.length != 8 && type == 2){
+           invalid('create_serial_code'); return;
+        }
+        if(serial_code.length != 8 && type == 3){
+           invalid('create_serial_code'); return;
+        }
+        if(serial_code.length != 16 && type == 4){
+           invalid('create_serial_code'); return;
         }
         validate_serial_code(serial_code, function(result) {
           if(!result){
@@ -785,13 +834,19 @@
       function prepare_edit(id, code){
         $('#edit_serial_code').text(code);
         $('#edit_serial_code_id').val(id);
+        $('#edit_serial_code_len').val(code.length);
+        if(code.length == 18) $('#new_serial_code').mask('9999999-99-99-9999');
+        else if(code.length == 8 && code.includes('-')) $('#new_serial_code').mask('9999-999');
+        else if(code.length == 8) $('#new_serial_code').mask('99999999');
+        else if(code.length == 16) $('#new_serial_code').mask('9999999-9999-999');
       }
 
       function edit(){
         var order_no = $('#order_no').val();
         var serial_code_id = $('#edit_serial_code_id').val();
         var new_serial_code = $('#new_serial_code').val();
-        if(new_serial_code.length != 18){
+        var serial_code_len = $('#edit_serial_code_len').val();
+        if(new_serial_code.length != serial_code_len){
           invalid('new_serial_code');
           return;
         } else {
@@ -904,6 +959,14 @@
           });
         }
       }
+
+      $('input[type=radio][name=create_type]').change(function() {
+        $('#serial_code_add').val('');
+        if($(this).val() == 1) $('#create_serial_code').mask('9999999-99-99-9999');
+        if($(this).val() == 2) $('#create_serial_code').mask('9999-999');
+        if($(this).val() == 3) $('#create_serial_code').mask('99999999');
+        if($(this).val() == 4) $('#create_serial_code').mask('9999999-9999-999');
+      });
 
       function validate_serial_code(serial_code, _callback){
         var order_no = $('#order_no').val();
